@@ -25,6 +25,13 @@
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
 
+const unsigned int PORT_0_READ_BITS = 0x0F;
+/* Port 0 bits 0 to 3 are sensors to be read.
+ * These bits have to be set to 1 to allow reading.
+ * For each write, bitor the intended value with PORT_0_READ_BITS
+ * to avoid writing 0 to these bits.
+ */
+
 using namespace std;
 #ifndef START
 	#define START
@@ -49,13 +56,13 @@ bool link_robot() {
 	  if (!rlink.initialise(ROBOT_NUM)){
 	#endif
 		  cout<<"Cannot initialise link"<<endl;
-		  return -1;
+		  return false;
 	  }
 
   int val = rlink.request(TEST_INSTRUCTION);
   if (val == TEST_INSTRUCTION_RESULT) {
 	  cout<<"connected"<<endl;
-	  return 1;
+	  return true;
   }
   else if (val==REQUEST_ERROR) {
 	cout<<"Fatal errors on link:"<<endl;
@@ -188,7 +195,6 @@ void turn_left() {
 void route(int cnt){
 	//main part to control the route of the robot
 	//TODO: currently just finish the task without going back
-	rlink.command(WRITE_PORT_0,255);
 	while(true) {
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
