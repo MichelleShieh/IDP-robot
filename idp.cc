@@ -19,6 +19,13 @@
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
 
+const unsigned int PORT_0_READ_BITS = 0x0F;
+/* Port 0 bits 0 to 3 are sensors to be read.
+ * These bits have to be set to 1 to allow reading.
+ * For each write, bitor the intended value with PORT_0_READ_BITS
+ * to avoid writing 0 to these bits.
+ */
+
 using namespace std;
 #ifndef START
 	#define START
@@ -43,13 +50,13 @@ bool link_robot() {
 	  if (!rlink.initialise(ROBOT_NUM)){
 	#endif
 		  cout<<"Cannot initialise link"<<endl;
-		  return -1;
+		  return false;
 	  }
 
   int val = rlink.request(TEST_INSTRUCTION);
   if (val == TEST_INSTRUCTION_RESULT) {
 	  cout<<"connected"<<endl;
-	  return 1;
+	  return true;
   }
   else if (val==REQUEST_ERROR) {
 	cout<<"Fatal errors on link:"<<endl;
@@ -180,7 +187,6 @@ void turn_left() {
 void route(int cnt){
 	//main part to control the route of the robot
 	//TODO: currently just finish the task without going back
-	rlink.command(WRITE_PORT_0,255);
 	while(true) {
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
@@ -268,14 +274,36 @@ void pick(bool color) {
 	 * Input: if having green color or not
 	 * make command to actuator: pick 1, not pick 0
 	 ***/
+	// green: color == true; red: color == false
+	// actuator: port 0 bit 6
+	if(!color) {
+		rlink.command(WRITE_PORT_0, (1 << 6) | PORT_0_READ_BITS);
+	}
 }
 void push_tomato(int period) {
 	//make command to actuator
+	// actuator: port 0 bit 7
+	rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
+	delay(period);
+	rlink.command(WRITE_PORT_0, 0 | PORT_0_READ_BITS);
 }
 /*** end of pick&classify part ***/
 
 
 /*** start of push_tray part***/
+enum led_status_t {
+	/**
+	 * This enum is arranged such that
+	 * bit 0 of the enum corresponds to bit 4 of the write port (LED1)
+	 * and bit 1 of enum corresponds to bit 5 of the write port (LED2).
+	 * This allows us to do a simple bitshift to get the value to write.
+	 */
+	FULLSIZED, UNDERSIZED, CHERRY, IDLE
+	// 00,      10,         01,     11
+};
+inline void update_indicator_led(enum led_status_t status) {
+	rlink.command(WRITE_PORT_0, (status << 4) | PORT_0_READ_BITS);
+}
 void push_tray(int period, int motor_num) {
 	/***
 	 * Input: how long will it push the tray once, and the motor_num to do the push
@@ -291,6 +319,11 @@ void test(){
 
 int main(){
 	if (link_robot()) {
+		/* Initialise read/write ports.
+		 * Note it is unnecessary to initialise PORT_0_READ_BITS
+		 * as this will be done within update_indicator_led(). */
+		update_indicator_led(IDLE);
+		// initialise write bits for actuators here if necessary
 		/*** TESTING PARAMETER:
 		 * -1 testing turn right
 		 * -2 testing turn left
