@@ -12,6 +12,9 @@
  * left wheel moves when set to be stopped(solved by setting moving backwards)
  * the time condition for the line sensor to detect the end of the turning
  * line following without the line, turn right a bit, to make sure it wont ignore the first position to place tomatoes' trays
+ * 
+ * sub system demonstration:
+ * leave the start box, 
 ***/
 
 
@@ -253,7 +256,7 @@ void route(int cnt){
 		fout<<"time:"<<watch.read()<<endl;
 		if (cnt==-3 && flag) {
 			//TODO: picking function will be called here!
-			if (watch.read()>4343/56*9+50 && !is_picked[0]) {
+			if (watch.read()>4343/56*9+80 && !is_picked[0]) {
 				change_movement(0,0);
 				is_picked[0]=true;
 				delay(2000); 
@@ -262,28 +265,28 @@ void route(int cnt){
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*7.5+50 && !is_picked[1]) {
+			if (watch.read()>4343/56*7.5+80 && !is_picked[1]) {
 				change_movement(0,0);
 				is_picked[1]=true;
 				delay(1000);
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*5 && !is_picked[2]) {
+			if (watch.read()>4343/56*5+20 && !is_picked[2]) {
 				change_movement(0,0);
 				is_picked[2]=true;
 				delay(1000);
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*7.5 && !is_picked[3]) {
+			if (watch.read()>4343/56*7.5+50 && !is_picked[3]) {
 				change_movement(0,0);
 				is_picked[3]=true;
 				delay(1000);
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*7.5 && !is_picked[4]) {
+			if (watch.read()>4343/56*7.5+50 && !is_picked[4]) {
 				change_movement(0,0);
 				is_picked[4]=true;
 				delay(1000);
@@ -374,6 +377,22 @@ void route(int cnt){
 
 void test(){
 	//do the test for all separate functions with artificial input
+	watch.start();
+	for(int i=0;i<100;i++) {
+		rlink.request(ADC0);
+	}
+	//361 for running on computer
+	//158 for running on microprocessor
+	int time=watch.read();
+	cout<<time<<endl;
+	
+	/*
+	while(1){
+	rlink.command(WRITE_PORT_0, 255);
+	delay(1000);
+	rlink.command(WRITE_PORT_0, 0);
+	delay(1000);}
+	*/
 }
 
 
@@ -389,7 +408,8 @@ int main(){
 		 * -2 testing turn left
 		 * -3 for going a certain distance
 		 ***/
-		route(-3);	
+		route(-3);
+		//test();	
 		int zzz;
 		cin>>zzz;
 	}
