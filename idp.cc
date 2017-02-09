@@ -4,11 +4,14 @@
  * Move a certain distance
  * 
  * TO SOLVE:
- * line following without the line, turn right a bit, to make sure it wont ignore the first position to place tomatoes' trays
+ * 
+ * TO TEST:
+ * Move a certain distance
  * 
  * FINISHED?
  * left wheel moves when set to be stopped(solved by setting moving backwards)
  * the time condition for the line sensor to detect the end of the turning
+ * line following without the line, turn right a bit, to make sure it wont ignore the first position to place tomatoes' trays
 ***/
 
 
@@ -20,8 +23,9 @@
 #include <stopwatch.h>
 
 #define ROBOT_NUM 9
-#define high_power 85
+#define high_power 95
 #define low_power 0
+#define diff 6
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
 
@@ -42,10 +46,6 @@ using namespace std;
 
 struct reading{
 	int pin[8];
-};
-
-struct speed {
-	int l,r;
 };
 
 /*** start of communication part ***/
@@ -90,25 +90,60 @@ void change_movement(int l,int r) {
 }
 /*** end of helper functinos ***/
 
-
-/*** start of route part ***/
-//use MOTOR_x, and MOTOR_y to move and turn
-int check_status(bool sensor1, bool sensor2, bool sensor3, int dist) {
+/*** start of pick&classify part ***/
+void pick(bool color) {
 	/***
-	 * Input: 
-	 * 		the result from line following sensors 1->3: Assume 0 is white, 1 is black?
-	 *		distance from the wall
-	 * Output:
-	 * 		return 0: out of line, 
-	 * 		return 1: inline,
-	 * 		return 2: junction, 
-	 * 		return 3: need to turn right, 
-	 * 		return 4: need to turn left.
-	***/
+	 * Input: if having green color or not
+	 * make command to actuator: pick 1, not pick 0
+	 ***/
+	// green: color == true; red: color == false
+	// actuator: port 0 bit 6
+	if(!color) {
+		rlink.command(WRITE_PORT_0, (1 << 6) | PORT_0_READ_BITS);
+	}
 }
 
-speed pid_control() {
-	//not sure if we need it or not
+void reverse() {
+	rlink.command(WRITE_PORT_0, (0 << 6) | PORT_0_READ_BITS);
+}
+
+void push_tomato(int period) {
+	//make command to actuator
+	// actuator: port 0 bit 7
+	rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
+	delay(period);
+	rlink.command(WRITE_PORT_0, 0 | PORT_0_READ_BITS);
+}
+/*** end of pick&classify part ***/
+
+
+/*** start of push_tray part***/
+enum led_status_t {
+	/**
+	 * This enum is arranged such that
+	 * bit 0 of the enum corresponds to bit 4 of the write port (LED1)
+	 * and bit 1 of enum corresponds to bit 5 of the write port (LED2).
+	 * This allows us to do a simple bitshift to get the value to write.
+	 */
+	FULLSIZED, UNDERSIZED, CHERRY, IDLE
+	// 00,      10,         01,     11
+};
+inline void update_indicator_led(enum led_status_t status) {
+	rlink.command(WRITE_PORT_0, (status << 4) | PORT_0_READ_BITS);
+}
+void push_tray(int period, int motor_num) {
+	/***
+	 * Input: how long will it push the tray once, and the motor_num to do the push
+	 * Control the motor the do the push work
+	 ***/
+}
+/*** end of push part ***/
+
+/*** start of route part ***/
+//use MOTOR_1, and MOTOR_2 to move and turn
+
+void pi_control() {
+	//PI control for line following
 }
 
 void deal_with_junction() {
@@ -119,23 +154,23 @@ void deal_with_junction() {
 		fout<<line_reading<<":";
 		if (line_reading!=7) {
 			if(line_reading == 2) {
-				change_movement(high_power+6,high_power+128); //go straight
+				change_movement(high_power+diff,high_power+128); //go straight
 				fout<<"go straight with line"<<endl;
 			}
 			else if(line_reading == 3) {
-				change_movement(low_power+6,high_power+128); //110, turn left slightly
+				change_movement(low_power+diff,high_power+128); //110, turn left slightly
 				fout<<"move towards left slightly"<<endl;
 			}
 			else if(line_reading == 1) {
-				change_movement(low_power+6,high_power+128); //100, turn left 
+				change_movement(low_power+diff,high_power+128); //100, turn left 
 				fout<<"move towards left"<<endl;
 			}
 			else if(line_reading == 6) {
-				change_movement(high_power+6,low_power+128);//011, turn right slightly
+				change_movement(high_power+diff,low_power+128);//011, turn right slightly
 				fout<<"move towards right slightly"<<endl;
 			}
 			else if(line_reading == 4) {
-				change_movement(high_power+6,low_power+128);//001, turn right
+				change_movement(high_power+diff,low_power+128);//001, turn right
 				fout<<"move towards right"<<endl;
 			}
 			return;
@@ -195,33 +230,89 @@ void turn_left() {
 void route(int cnt){
 	//main part to control the route of the robot
 	//TODO: currently just finish the task without going back
+	int dist;
+	bool is_picked[10];
+	for (int i=0;i<10;i++) {
+		is_picked[i]=false;
+	}
+	bool flag=false; //after detecting the board for picking, become true;
 	while(true) {
+		dist=rlink.request(ADC0);
+		fout<<"dist:"<<dist<<endl;	
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
-		fout<<line_reading<<":";
+		fout<<line_reading<<":";	
+		if (cnt==-3 && dist>80 && flag==false) {
+			flag=true;
+			watch.start();
+			//70 to wall, 90 to start of board
+			//56cm for 4343 time
+		}
+		fout<<"flag:"<<flag<<endl;
+		fout<<"time:"<<watch.read()<<endl;
+		if (cnt==-3 && flag) {
+			//TODO: picking function will be called here!
+			if (watch.read()>4343/56*9+50 && !is_picked[0]) {
+				change_movement(0,0);
+				is_picked[0]=true;
+				delay(2000); 
+				//pick(0);
+				//reverse();
+				watch.stop();
+				watch.start();
+			}
+			if (watch.read()>4343/56*7.5+50 && !is_picked[1]) {
+				change_movement(0,0);
+				is_picked[1]=true;
+				delay(1000);
+				watch.stop();
+				watch.start();
+			}
+			if (watch.read()>4343/56*5 && !is_picked[2]) {
+				change_movement(0,0);
+				is_picked[2]=true;
+				delay(1000);
+				watch.stop();
+				watch.start();
+			}
+			if (watch.read()>4343/56*7.5 && !is_picked[3]) {
+				change_movement(0,0);
+				is_picked[3]=true;
+				delay(1000);
+				watch.stop();
+				watch.start();
+			}
+			if (watch.read()>4343/56*7.5 && !is_picked[4]) {
+				change_movement(0,0);
+				is_picked[4]=true;
+				delay(1000);
+				watch.stop();
+				watch.start();
+			}
+		} 
 		if (line_reading == 0) {
 			fout<<"not inline, go straight without line"<<endl;
-			change_movement(high_power+15,high_power+128); //go straight
+			change_movement(high_power+diff+3,high_power+128); //go straight
 		}
 		if(line_reading == 2) {
-			change_movement(high_power+6,high_power+128); //go straight
+			change_movement(high_power+diff,high_power+128); //go straight
 			fout<<"go straight with line"<<endl;
 		}
 		else if(line_reading == 3) {
-			change_movement(low_power+6,high_power+128); //110, turn left slightly
+			change_movement(low_power+diff,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
 		}
 		else if(line_reading == 1) {
-			change_movement(low_power+6,high_power+128); //100, turn left 
+			change_movement(low_power+diff,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
 		}
 		else if(line_reading == 6) {
-			change_movement(high_power+6,low_power+128);//011, turn right slightly
+			change_movement(high_power+diff,low_power+128);//011, turn right slightly
 			fout<<"move towards right slightly"<<endl;
 		}
 		else if(line_reading == 4) {
-			change_movement(high_power+6,low_power+128);//001, turn right
+			change_movement(high_power+diff,low_power+128);//001, turn right
 			fout<<"move towards right"<<endl;
 		}
 		else if(line_reading == 7) {
@@ -229,8 +320,8 @@ void route(int cnt){
 			 * Juntion start with number 0
 			 * case: turn left at junction 3,5
 			 * case: stop at vines, i.e.junction 1,2//TODO
-			 * case: turn left at junction 6,7, and turn right back to the line
-			 * 8, reverse
+			 * case: turn left at junction 6,7, and turn right back to the line 
+			 * case: junction 8, reverse
 			 ***/
 			fout<<"cnt of junction:"<<cnt<<endl;
 			if (cnt == 3 || cnt == 5) {
@@ -259,8 +350,14 @@ void route(int cnt){
 				turn_right();
 				cnt++;	
 			}
-			* */
-			else {
+			*/
+			else if (cnt==8) {
+				//start of reverse
+				//TODO!
+				change_movement(0,0);
+				delay(20000);
+			}
+			else if (cnt!=-3){
 				deal_with_junction();
 				cnt++;
 			}
@@ -274,51 +371,6 @@ void route(int cnt){
 }
 /*** end of route part ***/
 
-
-
-/*** start of pick&classify part ***/
-void pick(bool color) {
-	/***
-	 * Input: if having green color or not
-	 * make command to actuator: pick 1, not pick 0
-	 ***/
-	// green: color == true; red: color == false
-	// actuator: port 0 bit 6
-	if(!color) {
-		rlink.command(WRITE_PORT_0, (1 << 6) | PORT_0_READ_BITS);
-	}
-}
-void push_tomato(int period) {
-	//make command to actuator
-	// actuator: port 0 bit 7
-	rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
-	delay(period);
-	rlink.command(WRITE_PORT_0, 0 | PORT_0_READ_BITS);
-}
-/*** end of pick&classify part ***/
-
-
-/*** start of push_tray part***/
-enum led_status_t {
-	/**
-	 * This enum is arranged such that
-	 * bit 0 of the enum corresponds to bit 4 of the write port (LED1)
-	 * and bit 1 of enum corresponds to bit 5 of the write port (LED2).
-	 * This allows us to do a simple bitshift to get the value to write.
-	 */
-	FULLSIZED, UNDERSIZED, CHERRY, IDLE
-	// 00,      10,         01,     11
-};
-inline void update_indicator_led(enum led_status_t status) {
-	rlink.command(WRITE_PORT_0, (status << 4) | PORT_0_READ_BITS);
-}
-void push_tray(int period, int motor_num) {
-	/***
-	 * Input: how long will it push the tray once, and the motor_num to do the push
-	 * Control the motor the do the push work
-	 ***/
-}
-/*** end of push part ***/
 
 void test(){
 	//do the test for all separate functions with artificial input
@@ -337,7 +389,7 @@ int main(){
 		 * -2 testing turn left
 		 * -3 for going a certain distance
 		 ***/
-		route(-2);	
+		route(-3);	
 		int zzz;
 		cin>>zzz;
 	}
