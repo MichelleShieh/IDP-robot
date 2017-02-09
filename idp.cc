@@ -279,14 +279,14 @@ void route(int cnt){
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*7.5+50 && !is_picked[3]) {
+			if (watch.read()>4343/56*7.5+70 && !is_picked[3]) {
 				change_movement(0,0);
 				is_picked[3]=true;
 				delay(1000);
 				watch.stop();
 				watch.start();
 			}
-			if (watch.read()>4343/56*7.5+50 && !is_picked[4]) {
+			if (watch.read()>4343/56*7.5+75 && !is_picked[4]) {
 				change_movement(0,0);
 				is_picked[4]=true;
 				delay(1000);
@@ -408,7 +408,7 @@ int main(){
 		 * -2 testing turn left
 		 * -3 for going a certain distance
 		 ***/
-		route(-3);
+		route(0);
 		//test();	
 		int zzz;
 		cin>>zzz;
