@@ -155,35 +155,35 @@ void pi_control() {
 }
 
 void deal_with_junction() {
-	while(true) {
+	int line_reading;
+	do {
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
-		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
+		line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";
-		if (line_reading!=7) {
-			if(line_reading == 2) {
-				change_movement(high_power+diff,high_power+128); //go straight
-				fout<<"go straight with line"<<endl;
-			}
-			else if(line_reading == 3) {
-				change_movement(low_power+diff,high_power+128); //110, turn left slightly
-				fout<<"move towards left slightly"<<endl;
-			}
-			else if(line_reading == 1) {
-				change_movement(low_power+diff,high_power+128); //100, turn left 
-				fout<<"move towards left"<<endl;
-			}
-			else if(line_reading == 6) {
-				change_movement(high_power+diff,low_power+128);//011, turn right slightly
-				fout<<"move towards right slightly"<<endl;
-			}
-			else if(line_reading == 4) {
-				change_movement(high_power+diff,low_power+128);//001, turn right
-				fout<<"move towards right"<<endl;
-			}
-			return;
+		switch(line_reading) {
+		case 2:
+			change_movement(high_power+diff,high_power+128); //go straight
+			fout<<"go straight with line"<<endl;
+			break;
+		case 3:
+			change_movement(low_power+diff,high_power+128); //110, turn left slightly
+			fout<<"move towards left slightly"<<endl;
+			break;
+		case 1:
+			change_movement(low_power+diff,high_power+128); //100, turn left 
+			fout<<"move towards left"<<endl;
+			break;
+		case 6:
+			change_movement(high_power+diff,low_power+128);//011, turn right slightly
+			fout<<"move towards right slightly"<<endl;
+			break;
+		case 4:
+			change_movement(high_power+diff,low_power+128);//001, turn right
+			fout<<"move towards right"<<endl;
+			break;
 		}
-	}
+	} while(line_reading == 7);
 }
 
 void turn_right() {
@@ -234,25 +234,27 @@ void turn_right_with_going_backwards() {
 		cout<<line_reading<<endl;
 		fout<<line_reading<<":";
 		if (watch.read()>800) {
-			if(line_reading == 2) {
+			switch(line_reading) {
+			case 2:
 				change_movement(high_power+diff,high_power+128); //go straight
 				fout<<"go straight with line"<<endl;
-			}
-			else if(line_reading == 3) {
+				break;
+			case 3:
 				change_movement(low_power,high_power+128); //110, turn left slightly
 				fout<<"move towards left slightly"<<endl;
-			}
-			else if(line_reading == 1) {
+				break;
+			case 1:
 				change_movement(low_power+128,high_power+128); //100, turn left 
 				fout<<"move towards left"<<endl;
-			}
-			else if(line_reading == 6) {
+				break;
+			case 6:
 				change_movement(high_power,low_power+128);//011, turn right slightly
 				fout<<"move towards right slightly"<<endl;
-			}
-			else if(line_reading == 4) {
+				break;
+			case 4:
 				change_movement(high_power,low_power);//001, turn right
 				fout<<"move towards right"<<endl;
+				break;
 			}
 			watch.stop();
 			return;
@@ -297,11 +299,12 @@ void error_handling(int prev_detection) {
 	 * if it was turning right, keeps turning left, until go back to non-all-dark places
 	 * if it was turning left, keeps turning right, until go back to non-all-dark places
 	 ***/
-	 if (prev_detection == 3 || prev_detection ==1) {
+	// Perhaps better to use switch() ?
+	if (prev_detection == 3 || prev_detection ==1) {
 			//while (detection != 0) {
 				//return;
 			//}
-	 }
+	}
 	 
 }
 
@@ -371,7 +374,9 @@ void route(int cnt){
 				watch.start();
 			}
 		} 
-		if (line_reading == 0) {
+		switch(line_reading) {
+		case 0:
+			//if (line_reading == 0) {
 			fout<<"not inline, go straight without line"<<endl;
 			//change_movement(high_power+diff+10,high_power+128); //go straight
 			if (reverse==false) {
@@ -389,28 +394,34 @@ void route(int cnt){
 				}
 				delay(30);
 			}
-		}
-		if(line_reading == 2) {
+			break;
+			//}
+			//if(line_reading == 2) {
+		case 2:
 			change_movement(high_power+diff,high_power+128); //go straight
 			fout<<"go straight with line"<<endl;
-		}
-		else if(line_reading == 3) {
+			break;
+			//}
+			//else if(line_reading == 3) {
+		case 3:
 			change_movement(low_power,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
-		}
-		else if(line_reading == 1) {
+			break;
+			//}
+			//else if(line_reading == 1) {
+		case 1:
 			change_movement(low_power+128,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
-		}
-		else if(line_reading == 6) {
+			break;
+		case 6:
 			change_movement(high_power,low_power+128);//011, turn right slightly
 			fout<<"move towards right slightly"<<endl;
-		}
-		else if(line_reading == 4) {
+			break;
+		case 4:
 			change_movement(high_power,low_power);//001, turn right
 			fout<<"move towards right"<<endl;
-		}
-		else if(line_reading == 7) {
+			break;
+		case 7:
 			/*** when met with junction
 			 * Juntion start with number 0
 			 * case: turn left at junction 3,5
@@ -419,35 +430,34 @@ void route(int cnt){
 			 * case: junction 8, reverse
 			 ***/
 			fout<<"cnt of junction:"<<cnt<<endl;
-			if (cnt == 3 || cnt == 5) {
+			switch(cnt) {
+			case 3:
+			case 5:
+			case -2: // testing for turn left
+			case 12:
 				turn_left();
-				cnt++;
-			}
-			else if(cnt==-1) {
-				//testing for turn right
+				break;
+			case -1: // testing for turn right
+			case 11:
 				turn_right();
-			}
-			else if(cnt==-2) {
-				//testing for turn left
-				turn_left();
-			}
+				break;
 			/*
-			else if (cnt==1 || cnt==2) {
+			case 1:
+			case 2:
 				//at the vine
 				change_movement(0,0);
 				delay(3000);
-				cnt++;
-			}
-			else if (cnt==6 || cnt==7) {
+				break;
+			case 6:
+			case 7:
 				//placing
 				turn_left();
 				change_movement(0,0);
 				delay(3000);
 				turn_right();
-				cnt++;	
-			}
+				break;
 			*/
-			else if (cnt==8) {
+			case 8:
 				//start of reverse
 				turn_left();
 				change_movement(0,0);
@@ -455,42 +465,34 @@ void route(int cnt){
 				change_movement(high_power+128,high_power);
 				delay(2200);
 				turn_left();
-				cnt++;
 				reverse=true;
-			}
-			else if (cnt==10) {
+				break;
+			case 10:
 				/*
 				change_movement(high_power,high_power+128);
 				delay(2000);
 				*/
 				turn_right_without_junction();
-				cnt++;
-			}
-			else if (cnt==11) {
-				turn_right();
-				cnt++;
-			}
-			else if (cnt==12) {
-				turn_left();
-				cnt++;
-			}
-			else if (cnt==13) {
+				break;
+			case 13:
 				turn_right_with_going_backwards();
-				cnt++;
-			}
-			else if (cnt==15) {
+				break;
+			case 15:
 				change_movement(0,0);
 				return;
-			}
-			else if (cnt!=-3){
-				deal_with_junction();
-				cnt++;
-			}
+			default:
+				if (cnt!=-3){
+					deal_with_junction();
+				}
 			/* one way to detect each junction once
 			if (cnt!=3 && cnt!= 5) {
 				delay(400);
 			}*/
-		}
+			}
+			if(cnt > 0) { // not a test case
+				cnt++;
+			}
+		break;
 		//delay(45);
 	}
 }
