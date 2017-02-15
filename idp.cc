@@ -373,7 +373,6 @@ void route(int cnt){
 		} 
 		switch(line_reading) {
 		case 0:
-			//if (line_reading == 0) {
 			fout<<"not inline, go straight without line"<<endl;
 			//change_movement(high_power+diff+10,high_power+128); //go straight
 			if (reverse==false) {
@@ -392,20 +391,14 @@ void route(int cnt){
 				delay(30);
 			}
 			break;
-			//}
-			//if(line_reading == 2) {
 		case 2:
 			change_movement(high_power+diff,high_power+128); //go straight
 			fout<<"go straight with line"<<endl;
 			break;
-			//}
-			//else if(line_reading == 3) {
 		case 3:
 			change_movement(low_power,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
 			break;
-			//}
-			//else if(line_reading == 1) {
 		case 1:
 			change_movement(low_power+128,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
@@ -506,14 +499,6 @@ void test(){
 	//158 for running on microprocessor
 	int time=watch.read();
 	cout<<time<<endl;
-	
-	/*
-	while(1){
-	rlink.command(WRITE_PORT_0, 255);
-	delay(1000);
-	rlink.command(WRITE_PORT_0, 0);
-	delay(1000);}
-	*/
 }
 
 void test_picking() {
@@ -544,7 +529,6 @@ void test_going_straight_without_line() {
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";	
-		//if (line_reading == 0) {
 		switch(line_reading) {
 		case 0:
 			fout<<"not inline, go straight without line"<<endl;
