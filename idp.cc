@@ -575,7 +575,7 @@ void test_actuator() {
 	while(1){
 		rlink.command(WRITE_PORT_0, 255);
 		delay(3000);
-		rlink.command(WRITE_PORT_0, 0);
+		rlink.command(WRITE_PORT_0, PORT_0_READ_BITS);
 		delay(3000);
 	}
 }
@@ -634,75 +634,6 @@ void test_going_straight_without_line() {
 		}
 	}
 }
-
-void test_picking() {
-}
-
-void test_placing() {
-}
-
-void test_actuator() {
-	while(1){
-		rlink.command(WRITE_PORT_0, 255);
-		delay(3000);
-		rlink.command(WRITE_PORT_0, PORT_0_READ_BITS);
-		delay(3000);
-	}
-}
-
-void test_conveyor() {
-	//Blue wire
-	rlink.command(MOTOR_3_GO,100);
-}
-
-void test_going_straight_without_line() {
-	while(1) {
-		int dist=rlink.request(ADC0);
-		fout<<"dist:"<<dist<<endl;	
-		int result = rlink.request(READ_PORT_0);
-		reading ic = get_ic_reading(result);
-		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
-		fout<<line_reading<<":";	
-		if (line_reading == 0) {
-			fout<<"not inline, go straight without line"<<endl;
-			//change_movement(high_power+diff+10,high_power+128); //go straight
-			if(dist < 50) { // turn right
-				//change_movement(128,0+128);//011, turn right
-				change_movement(high_power+diff,low_power);//turn right
-				fout<<"move towards right"<<endl;
-			}
-			else if(dist > 60) {
-				//change_movement(low_power+diff,128+128); //110, turn left slightly
-				change_movement(low_power+diff,high_power+128); //110, turn left slightly				
-				fout<<"move towards left slightly"<<endl;
-			} else { // go straight
-				change_movement(high_power+diff+10,high_power+128); //go straight
-			}
-			delay(30);
-		}
-		if(line_reading == 2) {
-			change_movement(high_power+diff,high_power+128); //go straight
-			fout<<"go straight with line"<<endl;
-		}
-		else if(line_reading == 3) {
-			change_movement(low_power+diff,high_power+128); //110, turn left slightly
-			fout<<"move towards left slightly"<<endl;
-		}
-		else if(line_reading == 1) {
-			change_movement(low_power+128,high_power+128); //100, turn left 
-			fout<<"move towards left"<<endl;
-		}
-		else if(line_reading == 6) {
-			change_movement(high_power+diff,low_power+128);//011, turn right slightly
-			fout<<"move towards right slightly"<<endl;
-		}
-		else if(line_reading == 4) {
-			change_movement(high_power+diff,low_power);//001, turn right
-			fout<<"move towards right"<<endl;
-		}
-	}
-}
-
 
 int main(){
 	if (link_robot()) {
