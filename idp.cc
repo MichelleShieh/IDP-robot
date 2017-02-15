@@ -1,6 +1,9 @@
 /***
  * TO DO LIST:
- * PI control
+ * Reverse Route
+ * Picking
+ * Placing the trays
+ * PI control?
  * Move a certain distance
  * 
  * TO SOLVE:
@@ -14,7 +17,9 @@
  * line following without the line, turn right a bit, to make sure it wont ignore the first position to place tomatoes' trays
  * 
  * sub system demonstration:
- * leave the start box, 
+ * 1.leave the starting box, follow the line on the vine sides
+ * 2.turn left after passing all vine junctions, go straight without line(actually turn right a little bit to avoid ignoring the first junction for placing tomatoes), turn left after detecting the line, which is regarded the end of route out of line
+ * 3.go a certain distance after the distance sensor detected the board where the tomatoes are haning, the distance are set as that between five possible position for tomatoes
 ***/
 
 
@@ -26,9 +31,9 @@
 #include <stopwatch.h>
 
 #define ROBOT_NUM 9
-#define high_power 95
-#define low_power 0
-#define diff 6
+#define high_power 105
+#define low_power 70
+#define diff 8
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
 
@@ -108,6 +113,7 @@ void pick(bool color) {
 
 void reverse() {
 	rlink.command(WRITE_PORT_0, (0 << 6) | PORT_0_READ_BITS);
+	rlink.command(WRITE_PORT_0, (0 << 7) | PORT_0_READ_BITS);
 }
 
 void push_tomato(int period) {
@@ -189,16 +195,68 @@ void turn_right() {
 		change_movement(high_power,0);
 	}
 	*/
+	//change_movement(high_power+128,high_power);
+	//delay(500);
+	watch.start();
 	while (true) {
-		change_movement(high_power+20,20);
-		delay(30);
+		change_movement(high_power+17,40);
+		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";
-		if(line_reading==2) {
-			change_movement(high_power+6, high_power+128);
-			break;
+		if(line_reading==2 && watch.read()>800) {
+			change_movement(high_power+diff, high_power+128);
+			watch.stop();
+			return;
+		}
+	}
+}
+
+void turn_right_without_junction() {
+	watch.start();
+	while (watch.read()<4200) {
+		change_movement(high_power+17,40);
+	}
+	change_movement(high_power,high_power+128);
+	watch.stop();
+}
+
+void turn_right_with_going_backwards() {
+	change_movement(high_power+128,high_power);
+	delay(500);
+	watch.start();
+	while (true) {
+		change_movement(high_power+17,40);
+		//delay(30);
+		int result = rlink.request(READ_PORT_0);
+		reading ic = get_ic_reading(result);
+		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
+		cout<<line_reading<<endl;
+		fout<<line_reading<<":";
+		if (watch.read()>800) {
+			if(line_reading == 2) {
+				change_movement(high_power+diff,high_power+128); //go straight
+				fout<<"go straight with line"<<endl;
+			}
+			else if(line_reading == 3) {
+				change_movement(low_power,high_power+128); //110, turn left slightly
+				fout<<"move towards left slightly"<<endl;
+			}
+			else if(line_reading == 1) {
+				change_movement(low_power+128,high_power+128); //100, turn left 
+				fout<<"move towards left"<<endl;
+			}
+			else if(line_reading == 6) {
+				change_movement(high_power,low_power+128);//011, turn right slightly
+				fout<<"move towards right slightly"<<endl;
+			}
+			else if(line_reading == 4) {
+				change_movement(high_power,low_power);//001, turn right
+				fout<<"move towards right"<<endl;
+			}
+			watch.stop();
+			return;
 		}
 	}
 }
@@ -213,22 +271,41 @@ void turn_left() {
 	}
 	watch.stop();
 	*/
+	//change_movement(high_power+128,high_power);
+	//delay(500);
 	watch.start();
 	while (true) {
-		change_movement(20+128,high_power+20+128);
+		change_movement(40+128,high_power+17+128);
 		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<": time passed "<<watch.read()<<endl;
 		if(line_reading==2 && watch.read()>800) {
-			change_movement(high_power+6, high_power+128);
+			change_movement(high_power+diff, high_power+128);
 			watch.stop();
 			return;
 		}
 	}
 	
 }
+
+
+void error_handling(int prev_detection) {
+	/***
+	 * error handling part:
+	 * when it goes to dark place, check the last detection
+	 * if it was turning right, keeps turning left, until go back to non-all-dark places
+	 * if it was turning left, keeps turning right, until go back to non-all-dark places
+	 ***/
+	 if (prev_detection == 3 || prev_detection ==1) {
+			//while (detection != 0) {
+				//return;
+			//}
+	 }
+	 
+}
+
 
 void route(int cnt){
 	//main part to control the route of the robot
@@ -238,48 +315,102 @@ void route(int cnt){
 	for (int i=0;i<10;i++) {
 		is_picked[i]=false;
 	}
+	int prev_detection=0;
+	int picking_time[5] = {1000,-1,1000,1000,1000};
 	bool flag=false; //after detecting the board for picking, become true;
+	//bool reverse=false; //after finish the main route, turn to false, and do the reverse
 	while(true) {
 		dist=rlink.request(ADC0);
 		fout<<"dist:"<<dist<<endl;	
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
-		fout<<line_reading<<":";	
-		if (cnt==-3 && dist>80 && flag==false) {
+		fout<<line_reading<<":";
+		/*	
+		if ((cnt==0 || cnt==1) && dist>80 && flag==false) {
 			flag=true;
 			watch.start();
-			//70 to wall, 90 to start of board
-			//56cm for 4343 time
-		}
-		fout<<"flag:"<<flag<<endl;
-		fout<<"time:"<<watch.read()<<endl;
-		if (cnt==-3 && flag) {
-			//TODO: picking function will be called here!
-			if (watch.read()>4343/56*9+80 && !is_picked[0]) {
-				change_movement(0,0);
-				is_picked[0]=true;
-				delay(2000); 
-				//pick(0);
-				//reverse();
-				watch.stop();
+		//dist: 70 to wall, 90 to start of board
+		//56cm for 4343 time
+		*/
+		if (cnt==0 || cnt==1) {
+			if (dist>80) {
 				watch.start();
+				if (!is_picked[0] && watch.read()>picking_time[0]) {
+					change_movement(0,0);
+					is_picked[0]=true;
+					delay(2000); 
+					pick(0); //TODO: add the part for colour detection
+					watch.stop();
+					watch.start();
+					while (1) {
+						change_movement(high_power+128,high_power);
+						if (watch.read()>picking_time[0]+50) {
+							change_movement(0,0);
+							delay(2000);
+							reverse();
+							watch.stop();
+							break;
+						}
+					}
+				}
+				if (!is_picked[2] && watch.read()>picking_time[2]) {
+					change_movement(0,0);
+					is_picked[2]=true;
+					delay(2000); 
+					pick(0); //TODO: add the part for colour detection
+					watch.stop();
+					watch.start();
+					while (1) {
+						change_movement(high_power+128,high_power);
+						if (watch.read()>picking_time[2]+50) {
+							change_movement(0,0);
+							delay(2000);
+							reverse();
+							watch.stop();
+							break;
+						}
+					}
+				}
+				if (!is_picked[3] && watch.read()>picking_time[3]) {
+					change_movement(0,0);
+					is_picked[0]=true;
+					delay(2000); 
+					pick(0); //TODO: add the part for colour detection
+					watch.stop();
+					watch.start();
+					while (1) {
+						change_movement(high_power+128,high_power);
+						if (watch.read()>picking_time[3]+50) {
+							change_movement(0,0);
+							delay(2000);
+							reverse();
+							watch.stop();
+							break;
+						}
+					}
+				}
+				if (!is_picked[4] && watch.read()>picking_time[4]) {
+					change_movement(0,0);
+					is_picked[0]=true;
+					delay(2000); 
+					pick(0); //TODO: add the part for colour detection
+					watch.stop();
+					watch.start();
+					while (1) {
+						change_movement(high_power+128,high_power);
+						if (watch.read()>picking_time[4]+50) {
+							change_movement(0,0);
+							delay(2000);
+							reverse();
+							watch.stop();
+							break;
+						}
+					}
+				}
 			}
-			if (watch.read()>4343/56*7.5+80 && !is_picked[1]) {
-				change_movement(0,0);
-				is_picked[1]=true;
-				delay(1000);
-				watch.stop();
-				watch.start();
-			}
-			if (watch.read()>4343/56*5+20 && !is_picked[2]) {
-				change_movement(0,0);
-				is_picked[2]=true;
-				delay(1000);
-				watch.stop();
-				watch.start();
-			}
-			if (watch.read()>4343/56*7.5+70 && !is_picked[3]) {
+			/*
+			if (watch.read()>picking_time[3] && !is_picked[3]) {
 				change_movement(0,0);
 				is_picked[3]=true;
 				delay(1000);
@@ -293,29 +424,54 @@ void route(int cnt){
 				watch.stop();
 				watch.start();
 			}
+			*/
+			if (is_picked[0] && is_picked[2] && is_picked[3] && is_picked[4]) {
+				cnt++;
+				for (int i=0;i<5;i++) {
+					is_picked[i]=0;
+				}
+			}
 		} 
 		if (line_reading == 0) {
 			fout<<"not inline, go straight without line"<<endl;
-			change_movement(high_power+diff+3,high_power+128); //go straight
+			//change_movement(high_power+diff+10,high_power+128); //go straight
+			if (cnt<8) {
+				//use the distance sensor to help keep straight
+				if(dist < 50) { // turn right
+					change_movement(high_power,low_power);//turn right
+					fout<<"move towards right"<<endl;
+				}
+				else if(dist > 60) {
+					change_movement(low_power,high_power+128); //110, turn left slightly				
+					fout<<"move towards left slightly"<<endl;
+				} 
+				else { // go straight
+					change_movement(high_power+diff+10,high_power+128); //go straight
+				}
+				delay(30);
+			}
+			else {
+				change_movement(high_power+diff+10,high_power+128);
+			}
 		}
 		if(line_reading == 2) {
 			change_movement(high_power+diff,high_power+128); //go straight
 			fout<<"go straight with line"<<endl;
 		}
 		else if(line_reading == 3) {
-			change_movement(low_power+diff,high_power+128); //110, turn left slightly
+			change_movement(low_power,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
 		}
 		else if(line_reading == 1) {
-			change_movement(low_power+diff,high_power+128); //100, turn left 
+			change_movement(low_power+128,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
 		}
 		else if(line_reading == 6) {
-			change_movement(high_power+diff,low_power+128);//011, turn right slightly
+			change_movement(high_power,low_power+128);//011, turn right slightly
 			fout<<"move towards right slightly"<<endl;
 		}
 		else if(line_reading == 4) {
-			change_movement(high_power+diff,low_power+128);//001, turn right
+			change_movement(high_power,low_power);//001, turn right
 			fout<<"move towards right"<<endl;
 		}
 		else if(line_reading == 7) {
@@ -346,21 +502,52 @@ void route(int cnt){
 				delay(3000);
 				cnt++;
 			}
+			*/
 			else if (cnt==6 || cnt==7) {
+				//placing
+				//TO DO
 				turn_left();
-				change_movement(0,0);
-				delay(3000);
+				change_movement(high_power+128,high_power);
+				delay(1000);
+				//TODO: drop
 				turn_right();
 				cnt++;	
 			}
-			*/
 			else if (cnt==8) {
 				//start of reverse
-				//TODO!
+				turn_left();
 				change_movement(0,0);
-				delay(20000);
+				delay(1000);
+				change_movement(high_power+128,high_power);
+				delay(2200);
+				turn_left();
+				cnt++;
 			}
-			else if (cnt!=-3){
+			else if (cnt==10) {
+				/*
+				change_movement(high_power,high_power+128);
+				delay(2000);
+				*/
+				turn_right_without_junction();
+				cnt++;
+			}
+			else if (cnt==11) {
+				turn_right();
+				cnt++;
+			}
+			else if (cnt==12) {
+				turn_left();
+				cnt++;
+			}
+			else if (cnt==13) {
+				turn_right();
+				cnt++;
+			}
+			else if (cnt==15) {
+				change_movement(0,0);
+				return;
+			}
+			else if (cnt!=0 && cnt!=1){
 				deal_with_junction();
 				cnt++;
 			}
@@ -395,6 +582,74 @@ void test(){
 	*/
 }
 
+void test_picking() {
+}
+
+void test_placing() {
+}
+
+void test_actuator() {
+	while(1){
+		rlink.command(WRITE_PORT_0, 255);
+		delay(3000);
+		rlink.command(WRITE_PORT_0, PORT_0_READ_BITS);
+		delay(3000);
+	}
+}
+
+void test_conveyor() {
+	//Blue wire
+	rlink.command(MOTOR_3_GO,100);
+}
+
+void test_going_straight_without_line() {
+	while(1) {
+		int dist=rlink.request(ADC0);
+		fout<<"dist:"<<dist<<endl;	
+		int result = rlink.request(READ_PORT_0);
+		reading ic = get_ic_reading(result);
+		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
+		fout<<line_reading<<":";	
+		if (line_reading == 0) {
+			fout<<"not inline, go straight without line"<<endl;
+			//change_movement(high_power+diff+10,high_power+128); //go straight
+			if(dist < 50) { // turn right
+				//change_movement(128,0+128);//011, turn right
+				change_movement(high_power+diff,low_power);//turn right
+				fout<<"move towards right"<<endl;
+			}
+			else if(dist > 60) {
+				//change_movement(low_power+diff,128+128); //110, turn left slightly
+				change_movement(low_power+diff,high_power+128); //110, turn left slightly				
+				fout<<"move towards left slightly"<<endl;
+			} else { // go straight
+				change_movement(high_power+diff+10,high_power+128); //go straight
+			}
+			delay(30);
+		}
+		if(line_reading == 2) {
+			change_movement(high_power+diff,high_power+128); //go straight
+			fout<<"go straight with line"<<endl;
+		}
+		else if(line_reading == 3) {
+			change_movement(low_power+diff,high_power+128); //110, turn left slightly
+			fout<<"move towards left slightly"<<endl;
+		}
+		else if(line_reading == 1) {
+			change_movement(low_power+128,high_power+128); //100, turn left 
+			fout<<"move towards left"<<endl;
+		}
+		else if(line_reading == 6) {
+			change_movement(high_power+diff,low_power+128);//011, turn right slightly
+			fout<<"move towards right slightly"<<endl;
+		}
+		else if(line_reading == 4) {
+			change_movement(high_power+diff,low_power);//001, turn right
+			fout<<"move towards right"<<endl;
+		}
+	}
+}
+
 
 int main(){
 	if (link_robot()) {
@@ -408,8 +663,18 @@ int main(){
 		 * -2 testing turn left
 		 * -3 for going a certain distance
 		 ***/
+<<<<<<< Updated upstream
 		route(0);
+=======
+		//change_movement(high_power+diff+10,high_power+128);
+		//test_going_straight_without_line();
+		//route(0);
+		//turn_right_without_junction();
+		//turn_right_with_going_backwards();
+>>>>>>> Stashed changes
 		//test();	
+		test_actuator();
+		//test_conveyor();
 		int zzz;
 		cin>>zzz;
 	}
