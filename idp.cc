@@ -553,9 +553,9 @@ void route(int cnt){
 			case 15:
 				change_movement(0,0);
 				return;
-      case 0:
-      case 1:
-        deal_with_junction();
+			case 0:
+			case 1:
+				deal_with_junction();
 			/* one way to detect each junction once
 			if (cnt!=3 && cnt!= 5) {
 				delay(400);
