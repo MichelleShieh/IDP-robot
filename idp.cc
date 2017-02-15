@@ -227,7 +227,7 @@ void turn_right_with_going_backwards() {
 	delay(500);
 	watch.start();
 	while (true) {
-		change_movement(high_power+17,40);
+		change_movement(high_power+17,40+128);
 		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
@@ -300,12 +300,27 @@ void error_handling(int prev_detection) {
 	 * if it was turning right, keeps turning left, until go back to non-all-dark places
 	 * if it was turning left, keeps turning right, until go back to non-all-dark places
 	 ***/
-	// Perhaps better to use switch() ?
-	if (prev_detection == 3 || prev_detection ==1) {
-			//while (detection != 0) {
-				//return;
-			//}
-	}
+	 fout<<"INTO ERROR HANDLING"<<endl;
+	 if (prev_detection == 3 || prev_detection ==1 || prev_detection==7 || prev_detection==2) {
+		 while (1) {		
+			 int result = rlink.request(READ_PORT_0);
+			 reading ic = get_ic_reading(result);
+			 int detection = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
+			 if (detection!=0) {
+				 break;
+			 }
+		 }
+	 }
+	 else if (prev_detection == 4 || prev_detection== 5) {
+		 while (1) {		
+			 int result = rlink.request(READ_PORT_0);
+			 reading ic = get_ic_reading(result);
+			 int detection = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
+			 if (detection!=0) {
+				 break;
+			 }
+		 }
+	 }
 }
 
 
@@ -316,7 +331,7 @@ void route(int cnt){
 	bool is_picked[10] = { false };
 	int prev_detection=0;
 	int picking_time[5] = {1000,-1,1000,1000,1000};
-	bool flag=false; //after detecting the board for picking, become true;
+	//bool flag=false; //after detecting the board for picking, become true;
 	//bool reverse=false; //after finish the main route, turn to false, and do the reverse
 	while(true) {
 		dist=rlink.request(ADC0);
@@ -427,7 +442,7 @@ void route(int cnt){
 			if (is_picked[0] && is_picked[2] && is_picked[3] && is_picked[4]) {
 				cnt++;
 				for (int i=0;i<5;i++) {
-					is_picked[i]=0;
+					is_picked[i]=false;
 				}
 			}
 		} 
@@ -435,6 +450,9 @@ void route(int cnt){
 		case 0:
 			fout<<"not inline, go straight without line"<<endl;
 			//change_movement(high_power+diff+10,high_power+128); //go straight
+			if (cnt!=4 && cnt!=10) {
+				error_handling(prev_detection);
+			}
 			if (cnt<8) {
 				//use the distance sensor to help keep straight
 				if(dist < 50) { // turn right
@@ -450,7 +468,7 @@ void route(int cnt){
 				}
 				delay(30);
 			}
-      else {
+			else {
 				change_movement(high_power+diff+10,high_power+128);
 			}
 
@@ -548,6 +566,7 @@ void route(int cnt){
 			}
 			//delay(45);
 		}
+		prev_detection = line_reading;
 	}
 }
 /*** end of route part ***/
@@ -647,6 +666,7 @@ int main(){
 		 * -2 testing turn left
 		 * -3 for going a certain distance
 		 ***/
+		route(0);
 		//change_movement(high_power+diff+10,high_power+128);
 		//test_going_straight_without_line();
 		//route(0);
