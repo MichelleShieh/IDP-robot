@@ -313,10 +313,7 @@ void route(int cnt){
 	//main part to control the route of the robot
 	//TODO: currently just finish the task without going back
 	int dist;
-	bool is_picked[10];
-	for (int i=0;i<10;i++) {
-		is_picked[i]=false;
-	}
+	bool is_picked[10] = { false };
 	bool flag=false; //after detecting the board for picking, become true;
 	bool reverse=false; //after finish the main route, turn to false, and do the reverse
 	while(true) {
@@ -492,8 +489,8 @@ void route(int cnt){
 			if(cnt > 0) { // not a test case
 				cnt++;
 			}
-		break;
-		//delay(45);
+			//delay(45);
+		}
 	}
 }
 /*** end of route part ***/
@@ -547,7 +544,9 @@ void test_going_straight_without_line() {
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";	
-		if (line_reading == 0) {
+		//if (line_reading == 0) {
+		switch(line_reading) {
+		case 0:
 			fout<<"not inline, go straight without line"<<endl;
 			//change_movement(high_power+diff+10,high_power+128); //go straight
 			if(dist < 50) { // turn right
@@ -563,26 +562,27 @@ void test_going_straight_without_line() {
 				change_movement(high_power+diff+10,high_power+128); //go straight
 			}
 			delay(30);
-		}
-		if(line_reading == 2) {
+			break;
+		case 2:
 			change_movement(high_power+diff,high_power+128); //go straight
 			fout<<"go straight with line"<<endl;
-		}
-		else if(line_reading == 3) {
+			break;
+		case 3:
 			change_movement(low_power+diff,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
-		}
-		else if(line_reading == 1) {
+			break;
+		case 1:
 			change_movement(low_power+128,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
-		}
-		else if(line_reading == 6) {
+			break;
+		case 6:
 			change_movement(high_power+diff,low_power+128);//011, turn right slightly
 			fout<<"move towards right slightly"<<endl;
-		}
-		else if(line_reading == 4) {
+			break;
+		case 4:
 			change_movement(high_power+diff,low_power);//001, turn right
 			fout<<"move towards right"<<endl;
+			break;
 		}
 	}
 }
