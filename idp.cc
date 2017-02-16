@@ -31,9 +31,10 @@
 #include <stopwatch.h>
 
 #define ROBOT_NUM 9
-#define high_power 95
-#define low_power 70
-#define diff 15
+#define high_power 107
+#define low_power 15
+#define lowest_power 0
+#define diff 20
 //turn left: increase the diff, turn right: reduce the diff; diff>25
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
@@ -108,22 +109,18 @@ void pick(bool color) {
 	// green: color == true; red: color == false
 	// actuator: port 0 bit 6
 	if(!color) {
-		rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
+		rlink.command(WRITE_PORT_0, (0 << 6) | PORT_0_READ_BITS);
 	}
+	delay(1000);
+	rlink.command(WRITE_PORT_0, (1<<6) | PORT_0_READ_BITS);
 }
 
 void reverse() {
-	rlink.command(WRITE_PORT_0, (0 << 6) | PORT_0_READ_BITS);
-	rlink.command(WRITE_PORT_0, (0 << 7) | PORT_0_READ_BITS);
+	rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
+	delay(100);
+	rlink.command(WRITE_PORT_0, 0b01111111);
 }
 
-void push_tomato(int period) {
-	//make command to actuator
-	// actuator: port 0 bit 7
-	rlink.command(WRITE_PORT_0, (1 << 7) | PORT_0_READ_BITS);
-	delay(period);
-	rlink.command(WRITE_PORT_0, 0 | PORT_0_READ_BITS);
-}
 /*** end of pick&classify part ***/
 
 
@@ -200,13 +197,13 @@ void turn_right() {
 	//delay(500);
 	watch.start();
 	while (true) {
-		change_movement(high_power+17,40);
+		change_movement(127,40);
 		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";
-		if(line_reading==2 && watch.read()>800) {
+		if(line_reading==2 && watch.read()>1500) {
 			change_movement(high_power+diff, high_power+128);
 			watch.stop();
 			return;
@@ -216,8 +213,8 @@ void turn_right() {
 
 void turn_right_without_junction() {
 	watch.start();
-	while (watch.read()<4200) {
-		change_movement(high_power+17,40);
+	while (watch.read()<3700) {
+		change_movement(127,40);
 	}
 	change_movement(high_power,high_power+128);
 	watch.stop();
@@ -228,7 +225,7 @@ void turn_right_with_going_backwards() {
 	delay(500);
 	watch.start();
 	while (true) {
-		change_movement(high_power+17,40+128);
+		change_movement(127,80+128);
 		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
@@ -242,19 +239,19 @@ void turn_right_with_going_backwards() {
 				fout<<"go straight with line"<<endl;
 				break;
 			case 3:
-				change_movement(low_power,high_power+128); //110, turn left slightly
+				change_movement(low_power+diff,high_power+128); //110, turn left slightly
 				fout<<"move towards left slightly"<<endl;
 				break;
 			case 1:
-				change_movement(low_power+128,high_power+128); //100, turn left 
+				change_movement(lowest_power+diff,high_power+128); //100, turn left 
 				fout<<"move towards left"<<endl;
 				break;
 			case 6:
-				change_movement(high_power,low_power+128);//011, turn right slightly
+				change_movement(high_power+diff,low_power+128);//011, turn right slightly
 				fout<<"move towards right slightly"<<endl;
 				break;
 			case 4:
-				change_movement(high_power,low_power);//001, turn right
+				change_movement(high_power+diff,lowest_power+128);//001, turn right
 				fout<<"move towards right"<<endl;
 				break;
 			}
@@ -278,20 +275,29 @@ void turn_left() {
 	//delay(500);
 	watch.start();
 	while (true) {
-		change_movement(40+128,high_power+17+128);
+		change_movement(40+128,127+128);
 		//delay(30);
 		int result = rlink.request(READ_PORT_0);
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<": time passed "<<watch.read()<<endl;
-		if(line_reading==2 && watch.read()>800) {
+		if(line_reading==2 && watch.read()>1500) {
 			change_movement(high_power+diff, high_power+128);
 			watch.stop();
 			return;
 		}
-	}
-	
+	}	
 }
+
+void turn_left_without_junction() {
+	watch.start();
+	while (watch.read()<3200) {
+		change_movement(40+128,127+128);
+	}
+	change_movement(high_power,high_power+128);
+	watch.stop();
+}
+
 
 void error_handling(int prev_detection) {
 	/***
@@ -331,7 +337,7 @@ void route(int cnt){
 	bool in_picking = false;
 	bool is_picked[10] = { false };
 	int prev_detection=0;
-	int picking_time[5] = {1000,-1,1000,1000,1000};
+	const int picking_time[5] = {800,-1,2000,3000,4000};
 	//bool flag=false; //after detecting the board for picking, become true;
 	//bool reverse=false; //after finish the main route, turn to false, and do the reverse
 	while(true) {
@@ -349,6 +355,7 @@ void route(int cnt){
 			in_picking = true;
 		}
 		if(in_picking) {
+			fout<<"In Picking"<<endl;
 			fout<<"time:"<<watch.read()<<endl;
 			if (!is_picked[0] && watch.read()>picking_time[0]) {
 				change_movement(0,0);
@@ -360,7 +367,7 @@ void route(int cnt){
 				watch.start();
 				while (1) {
 					change_movement(high_power+128,high_power);
-					if (watch.read()>picking_time[0]+50) {
+					if (watch.read()>picking_time[0]+500) {
 						change_movement(0,0);
 						delay(2000);
 						reverse();
@@ -377,10 +384,11 @@ void route(int cnt){
 				delay(2000); 
 				pick(0); //TODO: add the part for colour detection
 				watch.stop();
+				fout<<"picking the third one"<<endl;
 				watch.start();
 				while (1) {
 					change_movement(high_power+128,high_power);
-					if (watch.read()>picking_time[2]+50) {
+					if (watch.read()>picking_time[2]+500) {
 						change_movement(0,0);
 						delay(2000);
 						reverse();
@@ -389,6 +397,7 @@ void route(int cnt){
 						break;
 					}
 				}
+				fout<<"reverse for the third picking"<<endl;
 			}
 			else if (!is_picked[3] && watch.read()>picking_time[3]) {
 					change_movement(0,0);
@@ -396,10 +405,11 @@ void route(int cnt){
 					delay(2000); 
 					pick(0); //TODO: add the part for colour detection
 					watch.stop();
+					fout<<"picking the fourth one"<<endl;
 					watch.start();
 					while (1) {
 						change_movement(high_power+128,high_power);
-						if (watch.read()>picking_time[3]+50) {
+						if (watch.read()>picking_time[3]+500) {
 							change_movement(0,0);
 							delay(2000);
 							reverse();
@@ -408,6 +418,7 @@ void route(int cnt){
 							break;
 						}
 					}
+				fout<<"reverse for the fourth picking"<<endl;
 		  }
 		  else if (!is_picked[4] && watch.read()>picking_time[4]) {
 					change_movement(0,0);
@@ -415,10 +426,11 @@ void route(int cnt){
 					delay(2000); 
 					pick(0); //TODO: add the part for colour detection
 					watch.stop();
+					fout<<"picking the fifth one"<<endl;
 					watch.start();
 					while (1) {
-						change_movement(high_power+128,high_power);
-						if (watch.read()>picking_time[4]+50) {
+						change_movement(high_power+diff,high_power+128);
+						if (watch.read()>1000) {
 							change_movement(0,0);
 							delay(2000);
 							reverse();
@@ -427,6 +439,7 @@ void route(int cnt){
 							break;
 						}
 					}
+				fout<<"move forward for the fifth picking"<<endl;
 		}
 
 		if (is_picked[0] && is_picked[2] && is_picked[3] && is_picked[4]) {
@@ -440,26 +453,28 @@ void route(int cnt){
 		case 0:
 			fout<<"not inline, go straight without line"<<endl;
 			//change_movement(high_power+diff+10,high_power+128); //go straight
+			/*
 			if (cnt!=4 && cnt!=10) {
 				error_handling(prev_detection);
 			}
+			*/
 			if (cnt<8) {
 				//use the distance sensor to help keep straight
 				if(dist < 50) { // turn right
-					change_movement(high_power,low_power);//turn right
+					change_movement(high_power+diff,lowest_power+128);//001, turn right
 					fout<<"move towards right"<<endl;
 				}
 				else if(dist > 60) {
-					change_movement(low_power,high_power+128); //110, turn left slightly				
+					change_movement(low_power+diff,high_power+128); //110, turn left slightly
 					fout<<"move towards left slightly"<<endl;
 				} 
 				else { // go straight
-					change_movement(high_power+diff+10,high_power+128); //go straight
+					change_movement(high_power+diff,high_power+128); //go straight
 				}
 				delay(30);
 			}
 			else {
-				change_movement(high_power+diff+10,high_power+128);
+				change_movement(high_power+diff,high_power+128);
 			}
 
 			break;
@@ -468,19 +483,19 @@ void route(int cnt){
 			fout<<"go straight with line"<<endl;
 			break;
 		case 3:
-			change_movement(low_power,high_power+128); //110, turn left slightly
+			change_movement(low_power+diff,high_power+128); //110, turn left slightly
 			fout<<"move towards left slightly"<<endl;
 			break;
 		case 1:
-			change_movement(low_power+128,high_power+128); //100, turn left 
+			change_movement(lowest_power+diff,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
 			break;
 		case 6:
-			change_movement(high_power,low_power+128);//011, turn right slightly
+			change_movement(high_power+diff,low_power+128);//011, turn right slightly
 			fout<<"move towards right slightly"<<endl;
 			break;
 		case 4:
-			change_movement(high_power,low_power);//001, turn right
+			change_movement(high_power+diff,lowest_power+128);//001, turn right
 			fout<<"move towards right"<<endl;
 			break;
 		case 7:
@@ -496,7 +511,6 @@ void route(int cnt){
 			case 3:
 			case 5:
 			case -2: // testing for turn left
-			case 12:
 				turn_left();
 				break;
 			case -1: // testing for turn right
@@ -510,24 +524,43 @@ void route(int cnt){
 				change_movement(0,0);
 				delay(3000);
 				break;
+				* */
 			case 6:
-			case 7:
 				//placing
-        // TODO
-				turn_left();
-				change_movement(high_power+128,high_power);
+				// TODO
+				turn_left_without_junction();
+				change_movement(high_power-20+128,high_power);
+				delay(1800);
+				change_movement(0,0);
+				update_indicator_led(CHERRY);
+				// TODO call conveyor function
 				delay(1000);
-				//TODO: drop
+				update_indicator_led(IDLE);
 				turn_right();
 				break;
-			*/
+			case 7:
+				//placing
+				turn_left();
+				change_movement(high_power-20+128,high_power);
+				delay(1800);
+				change_movement(0,0);
+				update_indicator_led(FULLSIZED);
+				// TODO
+				delay(1000);
+				update_indicator_led(IDLE);
+				turn_right();
+				break;
 			case 8:
 				//start of reverse
 				turn_left();
+				change_movement(high_power-20+128,high_power);
+				delay(1800);
 				change_movement(0,0);
+				update_indicator_led(UNDERSIZED);
+				// TODO
 				delay(1000);
-				change_movement(high_power+128,high_power);
-				delay(2200);
+				update_indicator_led(IDLE);
+				
 				turn_left();
 				break;
 			case 10:
@@ -537,14 +570,21 @@ void route(int cnt){
 				*/
 				turn_right_without_junction();
 				break;
+			case -4:
+			case 12:
+				change_movement(high_power+diff,high_power+128);
+				delay(2300);
+				turn_left_without_junction();
+				break;
 			case 13:
-				turn_right_with_going_backwards();
+				turn_right();
 				break;
 			case 15:
 				change_movement(0,0);
 				return;
 			case 0:
 			case 1:
+			default:
 				deal_with_junction();
 			/* one way to detect each junction once
 			if (cnt!=3 && cnt!= 5) {
@@ -592,7 +632,7 @@ void test_actuator() {
 
 void test_conveyor() {
 	//Blue wire
-	rlink.command(MOTOR_3_GO,100);
+	rlink.command(MOTOR_3_GO,50);
 }
 
 void test_going_straight_without_line() {
@@ -632,7 +672,7 @@ void test_going_straight_without_line() {
 			fout<<"move towards left slightly"<<endl;
 			break;
 		case 1:
-			change_movement(low_power+128,high_power+128); //100, turn left 
+			change_movement(lowest_power+diff,high_power+128); //100, turn left 
 			fout<<"move towards left"<<endl;
 			break;
 		case 6:
@@ -640,7 +680,7 @@ void test_going_straight_without_line() {
 			fout<<"move towards right slightly"<<endl;
 			break;
 		case 4:
-			change_movement(high_power+diff,low_power);//001, turn right
+			change_movement(high_power+diff,lowest_power+128);//001, turn right
 			fout<<"move towards right"<<endl;
 			break;
 		}
@@ -652,17 +692,20 @@ int main(){
 		/* Initialise read/write ports.
 		 * Note it is unnecessary to initialise PORT_0_READ_BITS
 		 * as this will be done within update_indicator_led(). */
-		update_indicator_led(IDLE);
+		//update_indicator_led(IDLE);
+		rlink.command(WRITE_PORT_0, 0b01111111); //
 		// initialise write bits for actuators here if necessary
 		/*** TESTING PARAMETER:
 		 * -1 testing turn right
 		 * -2 testing turn left
 		 * -3 for going a certain distance
+		 * -4 for turning right with going backwards
 		 ***/
-		route(0);
+		//change_movement(120, 100+128);
+		//route(-2);
 		//change_movement(high_power+diff+10,high_power+128);
 		//test_going_straight_without_line();
-		//route(0);
+		route(0);
 		//turn_right_without_junction();
 		//turn_right_with_going_backwards();
 		//test();	
