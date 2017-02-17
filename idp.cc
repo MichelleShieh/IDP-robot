@@ -34,7 +34,20 @@
 int high_power = 107;
 #define low_power 15
 #define lowest_power 0
+#define l_power_reverse 70+128
+#define r_power_reverse 120
+#define l_power_forwards 120
+#define r_power_forwards 90+128
 #define diff 20
+#define picking_time_0 730
+#define reverse_time_0 700
+#define picking_time_2 780
+#define reverse_time_2 1500
+#define picking_time_3 100
+#define reverse_time_3 2300
+#define picking_time_4 1000
+#define keep_going_time_4 1000
+#define turning_right_for_picking_time 500
 //turn left: increase the diff, turn right: reduce the diff; diff>25
 robot_link rlink;			// datatype for the robot link
 stopwatch watch;			// datatype for the stopwatch
@@ -362,7 +375,7 @@ void route(int cnt){
 	bool in_picking = false;
 	bool is_picked[10] = { false };
 	int prev_detection=-1;
-	const int picking_time[5] = {580,-1,1900,2300,3000};
+	//const int picking_time[5] = {580,-1,1900,2300,3000};
 	//bool flag=false; //after detecting the board for picking, become true;
 	//bool reverse=false; //after finish the main route, turn to false, and do the reverse
 	while(true) {
@@ -382,37 +395,106 @@ void route(int cnt){
 			fout<<"In Picking"<<endl;
 			fout<<"time:"<<watch.read()<<endl;
 			fout<<"dist:"<<dist<<endl;	
-			if (!is_picked[0] && watch.read()>picking_time[0]) {
+			if (!is_picked[0] && watch.read()>picking_time_0) {
 				change_movement(127,10);
-				delay(500);
+				delay(turning_right_for_picking_time);
 				change_movement(0,0);
 				is_picked[0]=true;
 				delay(2000); 
 				pick(0); //TODO: add the part for colour detection
 				watch.stop();
 				fout<<"picking: "<<0<<endl;
-				watch.start();
-				while (1) {
-					change_movement(high_power-30+128,high_power);
-					if (watch.read()>time+500) {
-						change_movement(0,0);
-						delay(2000);
-						reverse();
-						in_picking = false;
-						watch.stop();
-						change_movement(high_power+diff,high_power);
-						break;
-					}
-				}
+				change_movement(l_power_reverse,r_power_reverse);
+				delay(reverse_time_0);
+				change_movement(0,0);
+				delay(2000);
+				reverse();
+				in_picking = false;
+				change_movement(l_power_forwards,r_power_forwards);
 				fout<<"reverse: "<<0<<endl;
 			}
-			else if (!is_picked[2] && watch.read()>picking_time[2]) {
-				when_in_picking(in_picking, picking_time[2], 2, is_picked);
+			//else if (!is_picked[2] && watch.read()>picking_time[2]) {
+			else if (!is_picked[2]) {
+				static bool junction_detected = false;
+				if(line_reading == 7 && !junction_detected) {
+					junction_detected = true;
+					continue;
+				}
+				if(!junction_detected) {
+					// keep going straight, i.e. do nothing
+					;
+					//change_movement(127, 97 + 128);
+				} else {
+					// move backwards
+					change_movement(l_power_reverse,r_power_reverse);
+					delay(/*picking_time[2]*/picking_time_2);
+					// stop
+					change_movement(127,10);
+					delay(turning_right_for_picking_time);
+					change_movement(0, 0);
+					delay(2000);
+					// pick
+					pick(0);
+					is_picked[2] = true;
+					// go back to before board
+					change_movement(l_power_reverse,r_power_reverse);
+					delay(reverse_time_2/* TODO  */);
+					reverse();
+					in_picking = false;
+					change_movement(l_power_forwards, r_power_forwards);
+				}
 			}
-			else if (!is_picked[3] && watch.read()>picking_time[3]) {
-				when_in_picking(in_picking, picking_time[3], 3, is_picked);
+			else if (!is_picked[3]/* && watch.read()>picking_time[3]*/) {
+				//when_in_picking(in_picking, picking_time[3], 3, is_picked);
+				static bool junction_detected = false;
+				if(line_reading == 7 && !junction_detected) {
+					junction_detected = true;
+					continue;
+				}
+				if(!junction_detected) {
+					// keep going straight, i.e. do nothing
+					;
+					//change_movement(127, 97 + 128);
+				} else {
+					// in this case we move forward instead
+					change_movement(l_power_forwards, r_power_forwards);
+					delay(picking_time_3/*picking_time[3]*/);
+					// stop
+					change_movement(127,10);
+					delay(turning_right_for_picking_time);
+					change_movement(0, 0);
+					delay(2000);
+					// pick
+					pick(0);
+					is_picked[3] = true;
+					// go back
+					change_movement(l_power_reverse,r_power_reverse);
+					delay(reverse_time_3 /* TODO  */);
+					reverse();
+					in_picking = false;
+					change_movement(l_power_forwards, r_power_forwards);
+				}
 			}
-			else if (!is_picked[4] && watch.read()>picking_time[4]) {
+			else if (!is_picked[4]/* && watch.read()>picking_time[4]*/) {
+				if(dist < 80) { // just left board
+					// go straight for a little bit
+					change_movement(l_power_forwards, r_power_forwards);
+					delay(picking_time_4 /* TODO */);
+					// stop
+					change_movement(127,10);
+					delay(turning_right_for_picking_time);
+					change_movement(0, 0);
+					delay(2000);
+					pick(0);
+					is_picked[4] = true;
+					// go back
+					change_movement(l_power_forwards,r_power_forwards);
+					delay(keep_going_time_4 /* TODO */);
+					reverse();
+					in_picking = false;
+					change_movement(l_power_forwards, r_power_forwards);
+				}
+				/*
 				change_movement(127,10);
 				delay(500);
 				change_movement(0,0);
@@ -429,6 +511,7 @@ void route(int cnt){
 				in_picking = false;
 				high_power = 107;
 				fout<<"move forward for the fifth picking"<<endl;
+				*/
 			}
 
 			if (is_picked[0] && is_picked[2] && is_picked[3] && is_picked[4]) {
@@ -474,7 +557,7 @@ void route(int cnt){
 
 			break;
 		case 2:
-			change_movement(high_power+diff,high_power+128); //go straight
+			change_movement(127,97+128); //go straight
 			fout<<"go straight with line"<<endl;
 			break;
 		case 3:
@@ -654,7 +737,7 @@ void test_going_straight_without_line() {
 			} 
 			else {*/ 
 			// go straight
-			change_movement(high_power+diff,high_power+128); //go straight
+			change_movement(l_power_forwards, r_power_forwards); //go straight
 			delay(30);
 			break;
 		case 2:
