@@ -1,0 +1,1373 @@
+2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:4:move towards right
+4:4:4:4:4:4:4:4:4:4:4:4:4:4:7:cnt of junction:0
+7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:7:5:4:move towards right
+4:4:4:4:4:4:4:4:4:4:4:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:3:move towards left slightly
+3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:4:move towards right
+4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:3:move towards left slightly
+3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:3:2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:2:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:4:move towards right
+4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:6:2:go straight with line
+2:2:2:See board
+In Picking
+time:0
+dist:86
+2:In Picking
+time:6
+dist:89
+2:In Picking
+time:20
+dist:84
+2:In Picking
+time:25
+dist:87
+2:In Picking
+time:57
+dist:84
+2:In Picking
+time:62
+dist:87
+2:In Picking
+time:82
+dist:87
+2:In Picking
+time:94
+dist:88
+2:In Picking
+time:100
+dist:89
+2:In Picking
+time:116
+dist:89
+2:In Picking
+time:126
+dist:88
+2:In Picking
+time:142
+dist:89
+2:In Picking
+time:156
+dist:89
+2:In Picking
+time:166
+dist:91
+2:In Picking
+time:178
+dist:90
+2:In Picking
+time:186
+dist:89
+2:In Picking
+time:234
+dist:91
+2:In Picking
+time:244
+dist:90
+2:In Picking
+time:254
+dist:96
+2:In Picking
+time:261
+dist:93
+2:In Picking
+time:268
+dist:93
+2:In Picking
+time:278
+dist:95
+2:In Picking
+time:286
+dist:95
+2:In Picking
+time:313
+dist:95
+2:In Picking
+time:327
+dist:94
+2:In Picking
+time:340
+dist:95
+2:In Picking
+time:354
+dist:97
+2:In Picking
+time:362
+dist:103
+2:In Picking
+time:377
+dist:98
+2:In Picking
+time:383
+dist:96
+2:In Picking
+time:396
+dist:100
+2:In Picking
+time:406
+dist:101
+2:In Picking
+time:423
+dist:99
+2:In Picking
+time:440
+dist:95
+2:In Picking
+time:447
+dist:96
+2:In Picking
+time:459
+dist:99
+2:In Picking
+time:475
+dist:95
+2:In Picking
+time:481
+dist:95
+2:In Picking
+time:487
+dist:99
+2:In Picking
+time:498
+dist:96
+2:In Picking
+time:505
+dist:95
+2:In Picking
+time:526
+dist:96
+2:In Picking
+time:538
+dist:96
+2:In Picking
+time:544
+dist:98
+2:In Picking
+time:556
+dist:99
+2:In Picking
+time:562
+dist:100
+2:In Picking
+time:577
+dist:99
+2:In Picking
+time:596
+dist:101
+picking: 0
+reverse: 0
+2:See board
+In Picking
+time:0
+dist:97
+2:In Picking
+time:13
+dist:94
+2:In Picking
+time:20
+dist:97
+2:In Picking
+time:37
+dist:99
+2:In Picking
+time:70
+dist:97
+2:In Picking
+time:77
+dist:96
+2:In Picking
+time:114
+dist:95
+2:In Picking
+time:123
+dist:97
+2:In Picking
+time:166
+dist:96
+2:In Picking
+time:172
+dist:94
+2:In Picking
+time:179
+dist:97
+2:In Picking
+time:214
+dist:95
+2:In Picking
+time:223
+dist:97
+2:In Picking
+time:236
+dist:101
+2:In Picking
+time:258
+dist:96
+2:In Picking
+time:277
+dist:102
+2:In Picking
+time:293
+dist:99
+2:In Picking
+time:301
+dist:100
+2:In Picking
+time:309
+dist:101
+2:In Picking
+time:321
+dist:100
+2:In Picking
+time:330
+dist:101
+2:In Picking
+time:337
+dist:101
+2:In Picking
+time:352
+dist:99
+2:In Picking
+time:362
+dist:101
+2:In Picking
+time:377
+dist:103
+2:In Picking
+time:383
+dist:103
+2:In Picking
+time:395
+dist:104
+2:In Picking
+time:406
+dist:106
+2:In Picking
+time:413
+dist:107
+2:In Picking
+time:420
+dist:107
+2:In Picking
+time:426
+dist:103
+2:In Picking
+time:433
+dist:104
+2:In Picking
+time:438
+dist:107
+2:In Picking
+time:453
+dist:109
+2:In Picking
+time:463
+dist:108
+2:In Picking
+time:473
+dist:108
+2:In Picking
+time:481
+dist:111
+2:In Picking
+time:493
+dist:113
+2:In Picking
+time:505
+dist:109
+2:In Picking
+time:513
+dist:109
+3:In Picking
+time:523
+dist:112
+move towards left slightly
+3:In Picking
+time:542
+dist:112
+3:In Picking
+time:556
+dist:111
+3:In Picking
+time:563
+dist:114
+3:In Picking
+time:572
+dist:116
+3:In Picking
+time:594
+dist:113
+3:In Picking
+time:618
+dist:117
+3:In Picking
+time:625
+dist:116
+3:In Picking
+time:634
+dist:119
+3:In Picking
+time:644
+dist:118
+3:In Picking
+time:657
+dist:118
+3:In Picking
+time:664
+dist:119
+3:In Picking
+time:685
+dist:120
+3:In Picking
+time:714
+dist:123
+3:In Picking
+time:721
+dist:120
+3:In Picking
+time:729
+dist:123
+3:In Picking
+time:764
+dist:120
+3:In Picking
+time:775
+dist:121
+3:In Picking
+time:782
+dist:120
+3:In Picking
+time:793
+dist:120
+3:In Picking
+time:800
+dist:122
+3:In Picking
+time:808
+dist:120
+3:In Picking
+time:844
+dist:121
+3:In Picking
+time:857
+dist:121
+3:In Picking
+time:871
+dist:120
+3:In Picking
+time:884
+dist:121
+3:In Picking
+time:893
+dist:119
+3:In Picking
+time:901
+dist:121
+3:In Picking
+time:909
+dist:120
+3:In Picking
+time:916
+dist:124
+3:In Picking
+time:922
+dist:119
+3:In Picking
+time:928
+dist:120
+3:In Picking
+time:934
+dist:120
+3:In Picking
+time:943
+dist:120
+3:In Picking
+time:952
+dist:120
+3:In Picking
+time:964
+dist:120
+3:In Picking
+time:973
+dist:121
+3:In Picking
+time:979
+dist:118
+3:In Picking
+time:985
+dist:121
+3:In Picking
+time:992
+dist:120
+3:In Picking
+time:997
+dist:118
+3:In Picking
+time:1007
+dist:119
+3:In Picking
+time:1013
+dist:119
+3:In Picking
+time:1020
+dist:117
+3:In Picking
+time:1025
+dist:120
+3:In Picking
+time:1032
+dist:118
+3:In Picking
+time:1038
+dist:123
+3:In Picking
+time:1044
+dist:119
+3:In Picking
+time:1060
+dist:120
+3:In Picking
+time:1069
+dist:119
+3:In Picking
+time:1075
+dist:120
+3:In Picking
+time:1082
+dist:121
+3:In Picking
+time:1089
+dist:118
+3:In Picking
+time:1099
+dist:120
+3:In Picking
+time:1104
+dist:118
+3:In Picking
+time:1111
+dist:118
+3:In Picking
+time:1116
+dist:117
+3:In Picking
+time:1123
+dist:118
+3:In Picking
+time:1130
+dist:119
+3:In Picking
+time:1138
+dist:119
+3:In Picking
+time:1146
+dist:119
+3:In Picking
+time:1157
+dist:118
+3:In Picking
+time:1171
+dist:119
+3:In Picking
+time:1177
+dist:119
+3:In Picking
+time:1188
+dist:117
+3:In Picking
+time:1194
+dist:116
+3:In Picking
+time:1200
+dist:116
+3:In Picking
+time:1207
+dist:117
+3:In Picking
+time:1214
+dist:115
+3:In Picking
+time:1221
+dist:116
+3:In Picking
+time:1231
+dist:117
+3:In Picking
+time:1243
+dist:113
+3:In Picking
+time:1249
+dist:117
+3:In Picking
+time:1256
+dist:114
+3:In Picking
+time:1265
+dist:112
+3:In Picking
+time:1277
+dist:116
+3:In Picking
+time:1283
+dist:113
+3:In Picking
+time:1289
+dist:114
+3:In Picking
+time:1296
+dist:114
+3:In Picking
+time:1306
+dist:113
+3:In Picking
+time:1312
+dist:113
+3:In Picking
+time:1318
+dist:111
+3:In Picking
+time:1324
+dist:113
+3:In Picking
+time:1331
+dist:113
+3:In Picking
+time:1338
+dist:112
+3:In Picking
+time:1344
+dist:110
+3:In Picking
+time:1350
+dist:111
+3:In Picking
+time:1356
+dist:110
+3:In Picking
+time:1363
+dist:111
+3:In Picking
+time:1377
+dist:111
+3:In Picking
+time:1383
+dist:108
+2:In Picking
+time:1395
+dist:110
+go straight with line
+2:In Picking
+time:1409
+dist:108
+2:In Picking
+time:1414
+dist:111
+2:In Picking
+time:1427
+dist:109
+2:In Picking
+time:1434
+dist:108
+2:In Picking
+time:1440
+dist:108
+2:In Picking
+time:1447
+dist:107
+2:In Picking
+time:1463
+dist:109
+2:In Picking
+time:1476
+dist:102
+2:In Picking
+time:1492
+dist:104
+2:In Picking
+time:1499
+dist:98
+2:In Picking
+time:1506
+dist:96
+2:In Picking
+time:1513
+dist:98
+2:In Picking
+time:1519
+dist:101
+2:In Picking
+time:1526
+dist:98
+2:In Picking
+time:1531
+dist:96
+2:In Picking
+time:1538
+dist:99
+2:In Picking
+time:1549
+dist:97
+2:In Picking
+time:1555
+dist:96
+2:In Picking
+time:1562
+dist:97
+2:In Picking
+time:1572
+dist:97
+2:In Picking
+time:1581
+dist:98
+2:In Picking
+time:1588
+dist:97
+2:In Picking
+time:1594
+dist:97
+2:In Picking
+time:1603
+dist:96
+2:In Picking
+time:1609
+dist:96
+2:In Picking
+time:1615
+dist:98
+2:In Picking
+time:1621
+dist:104
+2:In Picking
+time:1627
+dist:99
+2:In Picking
+time:1637
+dist:98
+2:In Picking
+time:1643
+dist:98
+2:In Picking
+time:1649
+dist:98
+2:In Picking
+time:1656
+dist:107
+2:In Picking
+time:1666
+dist:107
+2:In Picking
+time:1676
+dist:108
+2:In Picking
+time:1685
+dist:106
+2:In Picking
+time:1693
+dist:106
+2:In Picking
+time:1699
+dist:127
+2:In Picking
+time:1705
+dist:126
+2:In Picking
+time:1711
+dist:126
+2:In Picking
+time:1717
+dist:124
+2:In Picking
+time:1726
+dist:127
+2:In Picking
+time:1733
+dist:125
+2:In Picking
+time:1739
+dist:124
+2:In Picking
+time:1753
+dist:124
+2:In Picking
+time:1759
+dist:126
+2:In Picking
+time:1767
+dist:126
+2:In Picking
+time:1777
+dist:121
+2:In Picking
+time:1793
+dist:120
+2:In Picking
+time:1799
+dist:119
+2:In Picking
+time:1804
+dist:120
+2:In Picking
+time:1816
+dist:121
+2:In Picking
+time:1823
+dist:113
+2:In Picking
+time:1829
+dist:112
+2:In Picking
+time:1835
+dist:115
+2:In Picking
+time:1843
+dist:113
+2:In Picking
+time:1849
+dist:113
+2:In Picking
+time:1855
+dist:91
+2:In Picking
+time:1861
+dist:90
+2:In Picking
+time:1873
+dist:90
+2:In Picking
+time:1886
+dist:92
+2:In Picking
+time:1893
+dist:78
+6:In Picking
+time:1898
+dist:77
+move towards right slightly
+6:In Picking
+time:1915
+dist:79
+picking: 2
+reverse: 2
+4:move towards right
+4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:4:6:move towards right slightly
+6:6:6:6:6:6:6:6:6:2:go straight with line
+2:2:2:2:2:2:2:2:2:2:2:2:See board
+In Picking
+time:0
+dist:87
+2:In Picking
+time:5
+dist:87
+2:In Picking
+time:25
+dist:86
+2:In Picking
+time:32
+dist:87
+2:In Picking
+time:45
+dist:89
+2:In Picking
+time:51
+dist:86
+3:In Picking
+time:64
+dist:88
+move towards left slightly
+3:In Picking
+time:91
+dist:89
+3:In Picking
+time:105
+dist:90
+3:In Picking
+time:112
+dist:84
+3:In Picking
+time:125
+dist:87
+3:In Picking
+time:149
+dist:88
+3:In Picking
+time:163
+dist:84
+3:In Picking
+time:170
+dist:84
+3:In Picking
+time:199
+dist:78
+3:In Picking
+time:206
+dist:78
+3:In Picking
+time:211
+dist:78
+3:In Picking
+time:225
+dist:79
+1:In Picking
+time:231
+dist:78
+move towards left
+1:In Picking
+time:268
+dist:77
+1:In Picking
+time:281
+dist:78
+1:In Picking
+time:287
+dist:79
+1:In Picking
+time:303
+dist:71
+1:In Picking
+time:310
+dist:72
+1:In Picking
+time:331
+dist:69
+1:In Picking
+time:348
+dist:66
+1:In Picking
+time:363
+dist:69
+1:In Picking
+time:370
+dist:65
+1:In Picking
+time:386
+dist:60
+1:In Picking
+time:398
+dist:60
+1:In Picking
+time:406
+dist:58
+1:In Picking
+time:423
+dist:88
+1:In Picking
+time:439
+dist:89
+1:In Picking
+time:446
+dist:90
+1:In Picking
+time:452
+dist:121
+1:In Picking
+time:464
+dist:118
+1:In Picking
+time:471
+dist:124
+1:In Picking
+time:484
+dist:120
+1:In Picking
+time:490
+dist:123
+1:In Picking
+time:508
+dist:121
+1:In Picking
+time:521
+dist:122
+1:In Picking
+time:527
+dist:120
+1:In Picking
+time:571
+dist:123
+3:In Picking
+time:583
+dist:122
+move towards left slightly
+3:In Picking
+time:609
+dist:120
+3:In Picking
+time:625
+dist:118
+3:In Picking
+time:631
+dist:118
+3:In Picking
+time:645
+dist:118
+3:In Picking
+time:650
+dist:113
+3:In Picking
+time:666
+dist:114
+3:In Picking
+time:672
+dist:114
+3:In Picking
+time:682
+dist:115
+3:In Picking
+time:689
+dist:113
+3:In Picking
+time:704
+dist:114
+3:In Picking
+time:721
+dist:111
+3:In Picking
+time:732
+dist:107
+3:In Picking
+time:743
+dist:109
+3:In Picking
+time:750
+dist:107
+3:In Picking
+time:764
+dist:109
+3:In Picking
+time:770
+dist:108
+2:In Picking
+time:783
+dist:110
+go straight with line
+2:In Picking
+time:808
+dist:106
+2:In Picking
+time:825
+dist:105
+2:In Picking
+time:909
+dist:105
+2:In Picking
+time:923
+dist:104
+2:In Picking
+time:1002
+dist:100
+2:In Picking
+time:1009
+dist:96
+2:In Picking
+time:1024
+dist:99
+2:In Picking
+time:1030
+dist:99
+2:In Picking
+time:1041
+dist:97
+2:In Picking
+time:1048
+dist:97
+2:In Picking
+time:1055
+dist:101
+2:In Picking
+time:1064
+dist:99
+2:In Picking
+time:1070
+dist:97
+2:In Picking
+time:1080
+dist:98
+2:In Picking
+time:1087
+dist:95
+2:In Picking
+time:1094
+dist:96
+2:In Picking
+time:1104
+dist:95
+2:In Picking
+time:1114
+dist:97
+2:In Picking
+time:1124
+dist:97
+2:In Picking
+time:1130
+dist:96
+2:In Picking
+time:1144
+dist:103
+2:In Picking
+time:1152
+dist:96
+2:In Picking
+time:1162
+dist:99
+2:In Picking
+time:1169
+dist:99
+2:In Picking
+time:1182
+dist:99
+2:In Picking
+time:1189
+dist:100
+2:In Picking
+time:1198
+dist:100
+2:In Picking
+time:1205
+dist:97
+2:In Picking
+time:1211
+dist:97
+2:In Picking
+time:1226
+dist:98
+2:In Picking
+time:1234
+dist:95
+2:In Picking
+time:1244
+dist:92
+2:In Picking
+time:1250
+dist:90
+2:In Picking
+time:1258
+dist:93
+2:In Picking
+time:1265
+dist:90
+2:In Picking
+time:1271
+dist:90
+2:In Picking
+time:1291
+dist:93
+2:In Picking
+time:1299
+dist:93
+2:In Picking
+time:1309
+dist:92
+2:In Picking
+time:1320
+dist:93
+2:In Picking
+time:1330
+dist:94
+2:In Picking
+time:1338
+dist:96
+2:In Picking
+time:1347
+dist:95
+2:In Picking
+time:1353
+dist:95
+2:In Picking
+time:1371
+dist:96
+2:In Picking
+time:1378
+dist:98
+2:In Picking
+time:1386
+dist:101
+2:In Picking
+time:1392
+dist:99
+2:In Picking
+time:1398
+dist:111
+2:In Picking
+time:1431
+dist:109
+2:In Picking
+time:1438
+dist:128
+2:In Picking
+time:1446
+dist:129
+2:In Picking
+time:1462
+dist:130
+2:In Picking
+time:1472
+dist:132
+2:In Picking
+time:1484
+dist:128
+2:In Picking
+time:1494
+dist:128
+2:In Picking
+time:1506
+dist:128
+2:In Picking
+time:1512
+dist:123
+2:In Picking
+time:1552
+dist:122
+2:In Picking
+time:1573
+dist:113
+2:In Picking
+time:1580
+dist:113
+2:In Picking
+time:1604
+dist:111
+2:In Picking
+time:1610
+dist:93
+2:In Picking
+time:1638
+dist:77
+2:In Picking
+time:1658
+dist:74
+2:In Picking
+time:1665
+dist:74
+6:In Picking
+time:1672
+dist:75
+move towards right slightly
+6:In Picking
+time:1695
+dist:72
+6:In Picking
+time:1724
+dist:79
+6:In Picking
+time:1748
+dist:75
+6:In Picking
+time:1756
+dist:78
+6:In Picking
+time:1774
+dist:79
+6:In Picking
+time:1781
+dist:78
+6:In Picking
+time:1788
+dist:81
+6:In Picking
+time:1795
+dist:81
+6:In Picking
+time:1802
+dist:82
+6:In Picking
+time:1808
+dist:81
+6:In Picking
+time:1816
+dist:81
+6:In Picking
+time:1822
+dist:80
+6:In Picking
+time:1840
+dist:80
+6:In Picking
+time:1860
+dist:80
+6:In Picking
+time:1865
+dist:80
+6:In Picking
+time:1871
+dist:83
+6:In Picking
+time:1881
+dist:80
+6:In Picking
+time:1887
+dist:81
+6:In Picking
+time:1894
+dist:83
+6:In Picking
+time:1901
+dist:84
+6:In Picking
+time:1907
+dist:83
+6:In Picking
+time:1913
+dist:83
+6:In Picking
+time:1921
+dist:86
+6:In Picking
+time:1928
+dist:80
+6:In Picking
+time:1944
+dist:80
+6:In Picking
+time:1950
+dist:82
+6:In Picking
+time:1958
+dist:80
+6:In Picking
+time:1964
+dist:80
+6:In Picking
+time:1970
+dist:78
+6:In Picking
+time:1977
+dist:80
+6:In Picking
+time:1984
+dist:81
+6:In Picking
+time:1990
+dist:81
+6:In Picking
+time:2008
+dist:80
+6:In Picking
+time:2014
+dist:83
+6:In Picking
+time:2023
+dist:81
+6:In Picking
+time:2030
+dist:80
+6:In Picking
+time:2043
+dist:81
+6:In Picking
+time:2049
+dist:78
+6:In Picking
+time:2055
+dist:80
+6:In Picking
+time:2063
+dist:81
+6:In Picking
+time:2069
+dist:80
+6:In Picking
+time:2074
+dist:80
+6:In Picking
+time:2081
+dist:81
+6:In Picking
+time:2087
+dist:82
+6:In Picking
+time:2094
+dist:81
+6:In Picking
+time:2100
+dist:82
+6:In Picking
+time:2107
+dist:82
+6:In Picking
+time:2113
+dist:83
+6:In Picking
+time:2118
+dist:81
+6:In Picking
+time:2125
+dist:84
+6:In Picking
+time:2131
+dist:83
+6:In Picking
+time:2145
+dist:83
+6:In Picking
+time:2151
+dist:81
+6:In Picking
+time:2158
+dist:86
+6:In Picking
+time:2166
+dist:81
+6:In Picking
+time:2172
+dist:83
+6:In Picking
+time:2178
+dist:83
+6:In Picking
+time:2183
+dist:82
+6:In Picking
+time:2190
+dist:81
+6:In Picking
+time:2196
+dist:82
+6:In Picking
+time:2203
+dist:84
+6:In Picking
+time:2209
+dist:83
+6:In Picking
+time:2215
+dist:82
+6:In Picking
+time:2221
+dist:83
+6:In Picking
+time:2230
+dist:84
+6:In Picking
+time:2240
+dist:82
+6:In Picking
+time:2250
+dist:87
+6:In Picking
+time:2256
+dist:84
+6:In Picking
+time:2262
+dist:84
+6:In Picking
+time:2275
+dist:84
+6:In Picking
+time:2282
+dist:82
+6:In Picking
+time:2290
+dist:84
+6:In Picking
+time:2297
+dist:82
+6:In Picking
+time:2303
+dist:83
+picking: 3

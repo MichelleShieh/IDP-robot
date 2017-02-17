@@ -1,6 +1,6 @@
 [project]
 name=idp
-base_path=/groups/IB/idp/idp-l106/mx229/IDP-robot
+base_path=/homes/mx229/idp_shared/mx229/IDP-robot
 make_in_base_path=true
 description=1B IDP
 run_cmd=./idp
