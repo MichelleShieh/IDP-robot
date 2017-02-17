@@ -43,9 +43,9 @@ int high_power = 107;
 #define reverse_time_0 700
 #define picking_time_2 780
 #define reverse_time_2 1500
-#define picking_time_3 100
-#define reverse_time_3 2300
-#define picking_time_4 1000
+#define picking_time_3 0
+#define reverse_time_3 2600
+#define picking_time_4 500
 #define keep_going_time_4 1000
 #define turning_right_for_picking_time 500
 //turn left: increase the diff, turn right: reduce the diff; diff>25
@@ -124,14 +124,14 @@ void pick(bool color) {
 	if(!color) {
 		rlink.command(WRITE_PORT_0, (0 << 6) | PORT_0_READ_BITS);
 	}
-	delay(1000);
+	delay(2000);
 	rlink.command(WRITE_PORT_0, (1 << 6) | PORT_0_READ_BITS);
 }
 
 void reverse() {
 	//actuator: port 7 for bottom arm, 0 for down, 1 for up
 	rlink.command(WRITE_PORT_0, (0b11 << 6) | PORT_0_READ_BITS);
-	delay(2000);
+	delay(3000);
 	rlink.command(WRITE_PORT_0, 0b01111111);
 }
 
@@ -400,118 +400,108 @@ void route(int cnt){
 				delay(turning_right_for_picking_time);
 				change_movement(0,0);
 				is_picked[0]=true;
-				delay(2000); 
+				delay(3000); 
 				pick(0); //TODO: add the part for colour detection
 				watch.stop();
 				fout<<"picking: "<<0<<endl;
 				change_movement(l_power_reverse,r_power_reverse);
 				delay(reverse_time_0);
 				change_movement(0,0);
-				delay(2000);
+				delay(3000);
 				reverse();
 				in_picking = false;
 				change_movement(l_power_forwards,r_power_forwards);
 				fout<<"reverse: "<<0<<endl;
 			}
-			//else if (!is_picked[2] && watch.read()>picking_time[2]) {
-			else if (!is_picked[2]) {
+			else if (!is_picked[2] && is_picked[0]) {
+				fout<<"picking:"<<2<<endl;
 				static bool junction_detected = false;
 				if(line_reading == 7 && !junction_detected) {
 					junction_detected = true;
 					continue;
 				}
 				if(!junction_detected) {
-					// keep going straight, i.e. do nothing
-					;
-					//change_movement(127, 97 + 128);
+					; // keep going straight, i.e. do nothing
 				} else {
 					// move backwards
 					change_movement(l_power_reverse,r_power_reverse);
-					delay(/*picking_time[2]*/picking_time_2);
+					delay(picking_time_2);
 					// stop
 					change_movement(127,10);
 					delay(turning_right_for_picking_time);
 					change_movement(0, 0);
-					delay(2000);
+					delay(3000);
 					// pick
 					pick(0);
 					is_picked[2] = true;
 					// go back to before board
 					change_movement(l_power_reverse,r_power_reverse);
-					delay(reverse_time_2/* TODO  */);
+					delay(reverse_time_2);
+					change_movement(0,0);
 					reverse();
 					in_picking = false;
 					change_movement(l_power_forwards, r_power_forwards);
 				}
 			}
-			else if (!is_picked[3]/* && watch.read()>picking_time[3]*/) {
-				//when_in_picking(in_picking, picking_time[3], 3, is_picked);
+			else if (!is_picked[3] && is_picked[0] && is_picked[2]) {
+				fout<<"picking:"<<3<<endl;
 				static bool junction_detected = false;
 				if(line_reading == 7 && !junction_detected) {
 					junction_detected = true;
 					continue;
 				}
 				if(!junction_detected) {
-					// keep going straight, i.e. do nothing
-					;
-					//change_movement(127, 97 + 128);
+					; // keep going straight, i.e. do nothing
 				} else {
 					// in this case we move forward instead
 					change_movement(l_power_forwards, r_power_forwards);
-					delay(picking_time_3/*picking_time[3]*/);
+					delay(picking_time_3);
 					// stop
 					change_movement(127,10);
 					delay(turning_right_for_picking_time);
 					change_movement(0, 0);
-					delay(2000);
+					delay(3000);
 					// pick
 					pick(0);
 					is_picked[3] = true;
 					// go back
 					change_movement(l_power_reverse,r_power_reverse);
-					delay(reverse_time_3 /* TODO  */);
+					delay(reverse_time_3);
+					change_movement(0,0);
 					reverse();
 					in_picking = false;
 					change_movement(l_power_forwards, r_power_forwards);
 				}
 			}
-			else if (!is_picked[4]/* && watch.read()>picking_time[4]*/) {
-				if(dist < 80) { // just left board
+			else if (!is_picked[4] && is_picked[0] && is_picked[2] && is_picked[3]) {
+				fout<<"picking:"<<4<<endl;
+				//if(dist < 80) { // just left board
+				static bool junction_detected = false;
+				if(line_reading == 7 && !junction_detected) {
+					junction_detected = true;
+					continue;
+				}
+				if(!junction_detected) {
+					; // go straight, i.e. do nothing
+				} else {
 					// go straight for a little bit
 					change_movement(l_power_forwards, r_power_forwards);
-					delay(picking_time_4 /* TODO */);
+					delay(picking_time_4);
 					// stop
 					change_movement(127,10);
 					delay(turning_right_for_picking_time);
 					change_movement(0, 0);
-					delay(2000);
+					delay(3000);
 					pick(0);
 					is_picked[4] = true;
 					// go back
 					change_movement(l_power_forwards,r_power_forwards);
-					delay(keep_going_time_4 /* TODO */);
+					delay(keep_going_time_4);
+					change_movement(0,0);
 					reverse();
 					in_picking = false;
 					change_movement(l_power_forwards, r_power_forwards);
 				}
-				/*
-				change_movement(127,10);
-				delay(500);
-				change_movement(0,0);
-				is_picked[4]=true;
-				delay(2000); 
-				pick(0); //TODO: add the part for colour detection
-				watch.stop();
-				fout<<"picking the fifth one"<<endl;
-				change_movement(high_power+diff,high_power+128);
-				delay(500);
-				change_movement(0,0);
-				delay(2000);
-				reverse();
-				in_picking = false;
-				high_power = 107;
-				fout<<"move forward for the fifth picking"<<endl;
-				*/
 			}
 
 			if (is_picked[0] && is_picked[2] && is_picked[3] && is_picked[4]) {
@@ -529,7 +519,6 @@ void route(int cnt){
 		switch(line_reading) {
 		case 0:
 			fout<<"not inline, go straight without line"<<endl;
-			//change_movement(high_power+diff+10,high_power+128); //go straight
 			/*
 			if (cnt!=4 && cnt!=10) {
 				error_handling(prev_detection);
@@ -611,8 +600,8 @@ void route(int cnt){
 				delay(1800);
 				change_movement(0,0);
 				update_indicator_led(CHERRY);
-				// TODO call conveyor function
-				delay(1000);
+				//rlink.command(MOTOR_3_GO, -50);
+				delay(2000);
 				update_indicator_led(IDLE);
 				turn_right();
 				break;
@@ -623,8 +612,8 @@ void route(int cnt){
 				delay(1800);
 				change_movement(0,0);
 				update_indicator_led(FULLSIZED);
-				// TODO
-				delay(1000);
+				//rlink.command(MOTOR_3_GO, -50);
+				delay(2000);
 				update_indicator_led(IDLE);
 				turn_right();
 				break;
@@ -635,8 +624,8 @@ void route(int cnt){
 				delay(1800);
 				change_movement(0,0);
 				update_indicator_led(UNDERSIZED);
-				// TODO
-				delay(1000);
+				//rlink.command(MOTOR_3_GO, -50);
+				delay(2000);
 				update_indicator_led(IDLE);
 				turn_left();
 				break;
@@ -659,8 +648,6 @@ void route(int cnt){
 			case 15:
 				change_movement(0,0);
 				return;
-			case 0:
-			case 1:
 			default:
 				deal_with_junction();
 			/* one way to detect each junction once
@@ -692,13 +679,7 @@ void test(){
 	cout<<time<<endl;
 }
 
-void test_picking() {
-}
-
-void test_placing() {
-}
-
-void test_actuator() {
+void blink() {
 	while(1){
 		rlink.command(WRITE_PORT_0, 255);
 		delay(3000);
@@ -770,7 +751,8 @@ int main(){
 		 * Note it is unnecessary to initialise PORT_0_READ_BITS
 		 * as this will be done within update_indicator_led(). */
 		//update_indicator_led(IDLE);
-		rlink.command(WRITE_PORT_0, 0b01111111); //
+		rlink.command(WRITE_PORT_0, 0b01111111);
+        //rlink.command(WRITE_PORT_0, 0b10111111);
 		// initialise write bits for actuators here if necessary
 		/*** TESTING PARAMETER:
 		 * -1 testing turn right
@@ -782,14 +764,12 @@ int main(){
 		//route(-2);
 		//change_movement(high_power+diff+10,high_power+128);
 		//test_going_straight_without_line();
+		change_movement(127,97+128); while(1) ;
 		route(0);
 		//turn_right_without_junction();
 		//turn_right_with_going_backwards();
 		//test();	
-		//test_actuator();
-		//test_conveyor();
-		//int zzz;
-		//cin>>zzz;
+		//blink();
 	}
 	fout.close();
 	return 0;
