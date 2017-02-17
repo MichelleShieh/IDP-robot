@@ -384,13 +384,13 @@ void route(int cnt){
 		reading ic = get_ic_reading(result);
 		int line_reading = ic.pin[0]+ic.pin[1]*2+ic.pin[2]*4;
 		fout<<line_reading<<":";
-		if (!in_picking && dist>85 && (cnt==-3 || cnt==1 || cnt==2)) {
+		/*if (!in_picking && dist>85 && (cnt==-3 || cnt==1 || cnt==2)) {
 			//dist: 70 to wall, 90 to start of board
 			//56cm for 4343 time
 			fout<<"See board"<<endl;
 			watch.start();
 			in_picking = true;
-		}
+			}*/
 		if(in_picking) {
 			fout<<"In Picking"<<endl;
 			fout<<"time:"<<watch.read()<<endl;
@@ -546,7 +546,8 @@ void route(int cnt){
 
 			break;
 		case 2:
-			change_movement(127,97+128); //go straight
+			//change_movement(127,97+128); //go straight
+			change_movement(l_power_forwards, r_power_forwards);
 			fout<<"go straight with line"<<endl;
 			break;
 		case 3:
@@ -574,7 +575,7 @@ void route(int cnt){
 			 * case: junction 8, reverse
 			 ***/
 			fout<<"cnt of junction:"<<cnt<<endl;
-			switch(cnt) {
+			switch(cnt) {/*
 			case 3:
 			case 5:
 			case -2: // testing for turn left
@@ -584,14 +585,6 @@ void route(int cnt){
 			case 11:
 				turn_right();
 				break;
-			/*
-			case 1:
-			case 2:
-				//at the vine
-				change_movement(0,0);
-				delay(3000);
-				break;
-				* */
 			case 6:
 				//placing
 				// TODO
@@ -630,10 +623,6 @@ void route(int cnt){
 				turn_left();
 				break;
 			case 10:
-				/*
-				change_movement(high_power,high_power+128);
-				delay(2000);
-				*/
 				turn_right_without_junction();
 				break;
 			case -4:
@@ -647,13 +636,9 @@ void route(int cnt){
 				break;
 			case 15:
 				change_movement(0,0);
-				return;
+				return;*/
 			default:
 				deal_with_junction();
-			/* one way to detect each junction once
-			if (cnt!=3 && cnt!= 5) {
-				delay(400);
-			}*/
 			}
 			if(cnt >= 0 && cnt!=1 && cnt!=2) { // not a test case
 				cnt++;
@@ -764,7 +749,8 @@ int main(){
 		//route(-2);
 		//change_movement(high_power+diff+10,high_power+128);
 		//test_going_straight_without_line();
-		change_movement(127,97+128); while(1) ;
+		//change_movement(127,97+128); while(1) ;
+		//change_movement(l_power_forwards, r_power_forwards); while(1);
 		route(0);
 		//turn_right_without_junction();
 		//turn_right_with_going_backwards();
